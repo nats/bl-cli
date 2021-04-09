@@ -9,7 +9,7 @@ me=$(basename "$0")
 
 help_message="\
 Usage: $me [<options>]
-Display doctl version
+Display bl version
 
 Options:
 

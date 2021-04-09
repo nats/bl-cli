@@ -17,19 +17,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
-var testBillingHistoryList = &do.BillingHistory{
-	BillingHistory: &godo.BillingHistory{
-		BillingHistory: []godo.BillingHistoryEntry{
+var testBillingHistoryList = &bl.BillingHistory{
+	BillingHistory: &binarylane.BillingHistory{
+		BillingHistory: []binarylane.BillingHistoryEntry{
 			{
 				Description: "Invoice for May 2018",
 				Amount:      "12.34",
-				InvoiceID:   godo.String("123"),
-				InvoiceUUID: godo.String("example-uuid"),
+				InvoiceID:   binarylane.String("123"),
+				InvoiceUUID: binarylane.String("example-uuid"),
 				Date:        time.Date(2018, 6, 1, 8, 44, 38, 0, time.UTC),
 				Type:        "Invoice",
 			},

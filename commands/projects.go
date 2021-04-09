@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/bl-cli/commands/displayers"
+	"github.com/binarylane/go-binarylane"
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +28,7 @@ import (
 func Projects() *Command {
 	projectsDesc := `
 
-Projects allow you to organize your DigitalOcean resources (like Droplets, Spaces, load balancers, domains, and floating IPs) into groups that fit the way you work. You can create projects that align with the applications, environments, and clients that you host on DigitalOcean.
+Projects allow you to organize your BinaryLane resources (like Servers, Spaces, load balancers, domains, and floating IPs) into groups that fit the way you work. You can create projects that align with the applications, environments, and clients that you host on BinaryLane.
 `
 
 	projectDetails := `
@@ -48,12 +48,12 @@ Projects allow you to organize your DigitalOcean resources (like Droplets, Space
 		Command: &cobra.Command{
 			Use:   "projects",
 			Short: "Manage projects and assign resources to them",
-			Long:  "The subcommands of `doctl projects` allow you to create, manage, and assign resources to your projects." + projectsDesc,
+			Long:  "The subcommands of `bl projects` allow you to create, manage, and assign resources to your projects." + projectsDesc,
 		},
 	}
 
 	CmdBuilder(cmd, RunProjectsList, "list", "List existing projects",
-		"List details for for your DigitalOcean projects, including:"+projectDetails,
+		"List details for for your BinaryLane projects, including:"+projectDetails,
 		Writer, aliasOpt("ls"), displayerType(&displayers.Project{}))
 	CmdBuilder(cmd, RunProjectsGet, "get <id>", "Retrieve details for a specific project",
 		"Display the following details for an existing project specified by its ID (use `default` for <id> to retieve your default project):"+projectDetails,
@@ -62,32 +62,32 @@ Projects allow you to organize your DigitalOcean resources (like Droplets, Space
 	cmdProjectsCreate := CmdBuilder(cmd, RunProjectsCreate, "create",
 		"Create a new project", "Create a new project to organize your resources specifying its name and purpose."+projectsDesc,
 		Writer, aliasOpt("c"), displayerType(&displayers.Project{}))
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectName, "", "",
+	AddStringFlag(cmdProjectsCreate, blcli.ArgProjectName, "", "",
 		"A name for the project", requiredOpt())
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectPurpose, "", "",
+	AddStringFlag(cmdProjectsCreate, blcli.ArgProjectPurpose, "", "",
 		"The project's purpose", requiredOpt())
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectDescription, "", "",
+	AddStringFlag(cmdProjectsCreate, blcli.ArgProjectDescription, "", "",
 		"A description of the project")
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectEnvironment, "", "",
+	AddStringFlag(cmdProjectsCreate, blcli.ArgProjectEnvironment, "", "",
 		"The environment in which your project resides. Possible values: `Development`, `Staging`, or `Production`")
 
 	cmdProjectsUpdate := CmdBuilder(cmd, RunProjectsUpdate, "update <id>",
 		"Update an existing project",
 		"Update information about an existing project specified by its ID (use `default` for <id> to update your default project).",
 		Writer, aliasOpt("u"), displayerType(&displayers.Project{}))
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectName, "", "", "A name for the project")
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectPurpose, "", "", "The project's purpose")
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectDescription, "", "",
+	AddStringFlag(cmdProjectsUpdate, blcli.ArgProjectName, "", "", "A name for the project")
+	AddStringFlag(cmdProjectsUpdate, blcli.ArgProjectPurpose, "", "", "The project's purpose")
+	AddStringFlag(cmdProjectsUpdate, blcli.ArgProjectDescription, "", "",
 		"A description of the project")
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectEnvironment, "", "",
+	AddStringFlag(cmdProjectsUpdate, blcli.ArgProjectEnvironment, "", "",
 		"The environment in which your project resides. Possible values: `Development`, `Staging`, or `Production`")
-	AddBoolFlag(cmdProjectsUpdate, doctl.ArgProjectIsDefault, "", false,
+	AddBoolFlag(cmdProjectsUpdate, blcli.ArgProjectIsDefault, "", false,
 		"Set the specified project as your default project")
 
 	cmdProjectsDelete := CmdBuilder(cmd, RunProjectsDelete, "delete <id> [<id> ...]",
 		"Delete the specified project", "Delete a project by specifying its ID. To be deleted, a project must not have any resources assigned to it.",
 		Writer, aliasOpt("d", "rm"))
-	AddBoolFlag(cmdProjectsDelete, doctl.ArgForce, doctl.ArgShortForce, false,
+	AddBoolFlag(cmdProjectsDelete, blcli.ArgForce, blcli.ArgShortForce, false,
 		"Delete the project without confirmation")
 
 	cmd.AddCommand(ProjectResourcesCmd())
@@ -101,7 +101,7 @@ func ProjectResourcesCmd() *Command {
 		Command: &cobra.Command{
 			Use:   "resources",
 			Short: "Manage resources assigned to a project",
-			Long:  "The subcommands of `doctl projects resources` allow you to list and assign resources to your projects.",
+			Long:  "The subcommands of `bl projects resources` allow you to list and assign resources to your projects.",
 		},
 	}
 
@@ -109,7 +109,7 @@ func ProjectResourcesCmd() *Command {
 
 A valid URN has the format: ` + "`" + `do:resource_type:resource_id` + "`" + `. For example:
 
-  - ` + "`" + `do:droplet:4126873` + "`" + `
+  - ` + "`" + `do:server:4126873` + "`" + `
   - ` + "`" + `do:volume:6fc4c277-ea5c-448a-93cd-dd496cfef71f` + "`" + `
 `
 
@@ -117,7 +117,7 @@ A valid URN has the format: ` + "`" + `do:resource_type:resource_id` + "`" + `. 
 		"List all of the resources assigned to the specified project displaying their uniform resource names (\"URNs\").",
 		Writer, aliasOpt("ls"), displayerType(&displayers.ProjectResource{}))
 	CmdBuilder(cmd, RunProjectResourcesGet, "get <urn>", "Retrieve a resource by its URN",
-		"Retrieve information about a resource by specifying its uniform resource name (\"URN\"). Currently, ony Droplets, floating IPs, load balancers, domains, and volumes are supported."+urnDesc,
+		"Retrieve information about a resource by specifying its uniform resource name (\"URN\"). Currently, ony Servers, floating IPs, load balancers, domains, and volumes are supported."+urnDesc,
 		Writer, aliasOpt("g"), displayerType(&displayers.ProjectResource{}))
 
 	cmdProjectResourcesAssign := CmdBuilder(cmd, RunProjectResourcesAssign,
@@ -125,7 +125,7 @@ A valid URN has the format: ` + "`" + `do:resource_type:resource_id` + "`" + `. 
 		"Assign one or more resources to a project",
 		"Assign one or more resources to a project by specifying the resource's uniform resource name (\"URN\")."+urnDesc,
 		Writer, aliasOpt("a"))
-	AddStringSliceFlag(cmdProjectResourcesAssign, doctl.ArgProjectResource, "",
+	AddStringSliceFlag(cmdProjectResourcesAssign, blcli.ArgProjectResource, "",
 		[]string{}, "URNs specifying resources to assign to the project")
 
 	return cmd
@@ -157,12 +157,12 @@ func RunProjectsGet(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Project{Projects: do.Projects{*p}})
+	return c.Display(&displayers.Project{Projects: bl.Projects{*p}})
 }
 
 // RunProjectsCreate creates a new Project with a given configuration.
 func RunProjectsCreate(c *CmdConfig) error {
-	r := new(godo.CreateProjectRequest)
+	r := new(binarylane.CreateProjectRequest)
 	if err := buildProjectsCreateRequestFromArgs(c, r); err != nil {
 		return err
 	}
@@ -173,7 +173,7 @@ func RunProjectsCreate(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Project{Projects: do.Projects{*p}})
+	return c.Display(&displayers.Project{Projects: bl.Projects{*p}})
 }
 
 // RunProjectsUpdate updates an existing Project with a given configuration.
@@ -184,7 +184,7 @@ func RunProjectsUpdate(c *CmdConfig) error {
 	}
 	id := c.Args[0]
 
-	r := new(godo.UpdateProjectRequest)
+	r := new(binarylane.UpdateProjectRequest)
 	if err := buildProjectsUpdateRequestFromArgs(c, r); err != nil {
 		return err
 	}
@@ -195,16 +195,16 @@ func RunProjectsUpdate(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Project{Projects: do.Projects{*p}})
+	return c.Display(&displayers.Project{Projects: bl.Projects{*p}})
 }
 
 // RunProjectsDelete deletes a Project with a given configuration.
 func RunProjectsDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return blcli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Doit.GetBool(c.NS, blcli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -250,21 +250,19 @@ func RunProjectResourcesGet(c *CmdConfig) error {
 
 	parts, isValid := validateURN(urn)
 	if !isValid {
-		return fmt.Errorf(`URN must be in the format "do:<resource_type>:<resource_id>" but was %q`, urn)
+		return fmt.Errorf(`URN must be in the format "bl:<resource_type>:<resource_id>" but was %q`, urn)
 	}
 
 	c.Args = []string{parts[2]}
 	switch parts[1] {
-	case "droplet":
-		return RunDropletGet(c)
+	case "server":
+		return RunServerGet(c)
 	case "floatingip":
 		return RunFloatingIPGet(c)
 	case "loadbalancer":
 		return RunLoadBalancerGet(c)
 	case "domain":
 		return RunDomainGet(c)
-	case "volume":
-		return RunVolumeGet(c)
 	default:
 		return fmt.Errorf("%q is an invalid resource type, consult the documentation", parts[1])
 	}
@@ -278,7 +276,7 @@ func RunProjectResourcesAssign(c *CmdConfig) error {
 	}
 	projectUUID := c.Args[0]
 
-	urns, err := c.Doit.GetStringSlice(c.NS, doctl.ArgProjectResource)
+	urns, err := c.Doit.GetStringSlice(c.NS, blcli.ArgProjectResource)
 	if err != nil {
 		return err
 	}
@@ -298,7 +296,7 @@ func validateURN(urn string) ([]string, bool) {
 		return nil, false
 	}
 
-	if parts[0] != "do" {
+	if parts[0] != "bl" {
 		return nil, false
 	}
 
@@ -313,26 +311,26 @@ func validateURN(urn string) ([]string, bool) {
 	return parts, true
 }
 
-func buildProjectsCreateRequestFromArgs(c *CmdConfig, r *godo.CreateProjectRequest) error {
-	name, err := c.Doit.GetString(c.NS, doctl.ArgProjectName)
+func buildProjectsCreateRequestFromArgs(c *CmdConfig, r *binarylane.CreateProjectRequest) error {
+	name, err := c.Doit.GetString(c.NS, blcli.ArgProjectName)
 	if err != nil {
 		return err
 	}
 	r.Name = name
 
-	purpose, err := c.Doit.GetString(c.NS, doctl.ArgProjectPurpose)
+	purpose, err := c.Doit.GetString(c.NS, blcli.ArgProjectPurpose)
 	if err != nil {
 		return err
 	}
 	r.Purpose = purpose
 
-	description, err := c.Doit.GetString(c.NS, doctl.ArgProjectDescription)
+	description, err := c.Doit.GetString(c.NS, blcli.ArgProjectDescription)
 	if err != nil {
 		return err
 	}
 	r.Description = description
 
-	environment, err := c.Doit.GetString(c.NS, doctl.ArgProjectEnvironment)
+	environment, err := c.Doit.GetString(c.NS, blcli.ArgProjectEnvironment)
 	if err != nil {
 		return err
 	}
@@ -341,41 +339,41 @@ func buildProjectsCreateRequestFromArgs(c *CmdConfig, r *godo.CreateProjectReque
 	return nil
 }
 
-func buildProjectsUpdateRequestFromArgs(c *CmdConfig, r *godo.UpdateProjectRequest) error {
-	if c.Doit.IsSet(doctl.ArgProjectName) {
-		name, err := c.Doit.GetString(c.NS, doctl.ArgProjectName)
+func buildProjectsUpdateRequestFromArgs(c *CmdConfig, r *binarylane.UpdateProjectRequest) error {
+	if c.Doit.IsSet(blcli.ArgProjectName) {
+		name, err := c.Doit.GetString(c.NS, blcli.ArgProjectName)
 		if err != nil {
 			return err
 		}
 		r.Name = name
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectPurpose) {
-		purpose, err := c.Doit.GetString(c.NS, doctl.ArgProjectPurpose)
+	if c.Doit.IsSet(blcli.ArgProjectPurpose) {
+		purpose, err := c.Doit.GetString(c.NS, blcli.ArgProjectPurpose)
 		if err != nil {
 			return err
 		}
 		r.Purpose = purpose
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectDescription) {
-		description, err := c.Doit.GetString(c.NS, doctl.ArgProjectDescription)
+	if c.Doit.IsSet(blcli.ArgProjectDescription) {
+		description, err := c.Doit.GetString(c.NS, blcli.ArgProjectDescription)
 		if err != nil {
 			return err
 		}
 		r.Description = description
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectEnvironment) {
-		environment, err := c.Doit.GetString(c.NS, doctl.ArgProjectEnvironment)
+	if c.Doit.IsSet(blcli.ArgProjectEnvironment) {
+		environment, err := c.Doit.GetString(c.NS, blcli.ArgProjectEnvironment)
 		if err != nil {
 			return err
 		}
 		r.Environment = environment
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectIsDefault) {
-		isDefault, err := c.Doit.GetBool(c.NS, doctl.ArgProjectIsDefault)
+	if c.Doit.IsSet(blcli.ArgProjectIsDefault) {
+		isDefault, err := c.Doit.GetBool(c.NS, blcli.ArgProjectIsDefault)
 		if err != nil {
 			return err
 		}

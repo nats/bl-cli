@@ -16,8 +16,8 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,12 +45,12 @@ func TestFloatingIPsGet(t *testing.T) {
 	})
 }
 
-func TestFloatingIPsCreate_Droplet(t *testing.T) {
+func TestFloatingIPsCreate_Server(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		ficr := &godo.FloatingIPCreateRequest{DropletID: 1}
+		ficr := &binarylane.FloatingIPCreateRequest{ServerID: 1}
 		tm.floatingIPs.EXPECT().Create(ficr).Return(&testFloatingIP, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgDropletID, 1)
+		config.Doit.Set(config.NS, blcli.ArgServerID, 1)
 
 		err := RunFloatingIPCreate(config)
 		assert.NoError(t, err)
@@ -59,10 +59,10 @@ func TestFloatingIPsCreate_Droplet(t *testing.T) {
 
 func TestFloatingIPsCreate_Region(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		ficr := &godo.FloatingIPCreateRequest{Region: "dev0"}
+		ficr := &binarylane.FloatingIPCreateRequest{Region: "dev0"}
 		tm.floatingIPs.EXPECT().Create(ficr).Return(&testFloatingIP, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Doit.Set(config.NS, blcli.ArgRegionSlug, "dev0")
 
 		err := RunFloatingIPCreate(config)
 		assert.NoError(t, err)
@@ -78,8 +78,8 @@ func TestFloatingIPsCreate_fail_with_no_args(t *testing.T) {
 
 func TestFloatingIPsCreate_fail_with_both_args(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		config.Doit.Set(config.NS, doctl.ArgDropletID, 1)
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Doit.Set(config.NS, blcli.ArgServerID, 1)
+		config.Doit.Set(config.NS, blcli.ArgRegionSlug, "dev0")
 
 		err := RunFloatingIPCreate(config)
 		assert.Error(t, err)
@@ -92,7 +92,7 @@ func TestFloatingIPsDelete(t *testing.T) {
 
 		config.Args = append(config.Args, "127.0.0.1")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		RunFloatingIPDelete(config)
 	})

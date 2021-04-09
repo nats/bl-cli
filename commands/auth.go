@@ -23,7 +23,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -46,7 +46,7 @@ func retrieveUserTokenFromCommandLine() (string, error) {
 		return "", ErrUnknownTerminal
 	}
 
-	fmt.Print("Please authenticate doctl for use with your DigitalOcean account. You can generate a token in the control panel at https://cloud.digitalocean.com/account/api/tokens\n\n")
+	fmt.Print("Please authenticate bl for use with your BinaryLane account. You can generate a token in the control panel at https://home.binarylane.com.au/api-info\n\n")
 	fmt.Print("Enter your access token: ")
 	passwdBytes, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
@@ -67,49 +67,49 @@ func (use *UnknownSchemeError) Error() string {
 	return "Unknown scheme: " + use.Scheme
 }
 
-// Auth creates auth commands for doctl.
+// Auth creates auth commands for bl-cli.
 func Auth() *Command {
 	cmd := &Command{
 		Command: &cobra.Command{
 			Use:   "auth",
-			Short: "Display commands for authenticating doctl with an account",
-			Long: `The ` + "`" + `doctl auth` + "`" + ` commands allow you to authenticate doctl for use with your DigitalOcean account using tokens that you generate in the control panel at https://cloud.digitalocean.com/account/api/tokens.
+			Short: "Display commands for authenticating bl with an account",
+			Long: `The ` + "`" + `bl auth` + "`" + ` commands allow you to authenticate bl for use with your BinaryLane account using tokens that you generate in the control panel at https://home.binarylane.com.au/api-info
 
-If you work with a just one account, you can call ` + "`" + `doctl auth init` + "`" + ` and supply the token when prompted. This creates an authentication context named ` + "`" + `default` + "`" + `.
+If you work with a just one account, you can call ` + "`" + `bl auth init` + "`" + ` and supply the token when prompted. This creates an authentication context named ` + "`" + `default` + "`" + `.
 
-To switch between multiple DigitalOcean accounts, including team accounts, you can create named contexts by using ` + "`" + `doctl auth init --context <name>` + "`" + `, then providing a token when prompted. This saves the token under the name you provide. To switch between accounts, use ` + "`" + `doctl auth switch --context <name>` + "`" + `.`,
+To switch between multiple BinaryLane accounts, including team accounts, you can create named contexts by using ` + "`" + `bl auth init --context <name>` + "`" + `, then providing a token when prompted. This saves the token under the name you provide. To switch between accounts, use ` + "`" + `bl auth switch --context <name>` + "`" + `.`,
 		},
 	}
 
-	cmdBuilderWithInit(cmd, RunAuthInit(retrieveUserTokenFromCommandLine), "init", "Initialize doctl to use a specific account", `This command allows you to initialize doctl with a token that allows it to query and manage your account details and resources.
+	cmdBuilderWithInit(cmd, RunAuthInit(retrieveUserTokenFromCommandLine), "init", "Initialize bl to use a specific account", `This command allows you to initialize bl with a token that allows it to query and manage your account details and resources.
 
-You will need an API token, which you can generate in the control panel at https://cloud.digitalocean.com/account/api/tokens.
+You will need an API token, which you can generate in the control panel at https://home.binarylane.com.au/api-info
 
-You can provide a name to this initialization via the `+"`"+`--context`+"`"+` flag, and then it will be saved as an "authentication context". Authentication contexts are accessible via `+"`"+`doctl auth switch`+"`"+`, which re-initializes doctl, or by providing the `+"`"+`--context`+"`"+` flag when using any doctl command (to specify that auth context for just one command). This enables you to use multiple DigitalOcean accounts with doctl, or tokens that have different authentication scopes.
+You can provide a name to this initialization via the `+"`"+`--context`+"`"+` flag, and then it will be saved as an "authentication context". Authentication contexts are accessible via `+"`"+`bl auth switch`+"`"+`, which re-initializes bl, or by providing the `+"`"+`--context`+"`"+` flag when using any bl command (to specify that auth context for just one command). This enables you to use multiple BinaryLane accounts with bl, or tokens that have different authentication scopes.
 
 If the `+"`"+`--context`+"`"+` flag is not specified, a default authentication context will be created during initialization.
 
-If doctl is never initialized, you will need to specify an API token whenever you use a `+"`"+`doctl`+"`"+` command via the `+"`"+`--access-token`+"`"+` flag.`, Writer, false)
+If bl is never initialized, you will need to specify an API token whenever you use a `+"`"+`bl`+"`"+` command via the `+"`"+`--access-token`+"`"+` flag.`, Writer, false)
 	cmdBuilderWithInit(cmd, RunAuthSwitch, "switch", "Switches between authentication contexts", `This command allows you to switch between accounts with authentication contexts you've already created.
 
-To see a list of available authentication contexts, call `+"`"+`doctl auth list`+"`"+`.
+To see a list of available authentication contexts, call `+"`"+`bl auth list`+"`"+`.
 
-For details on creating an authentication context, see the help for `+"`"+`doctl auth init`+"`"+`.`, Writer, false)
-	cmdAuthList := cmdBuilderWithInit(cmd, RunAuthList, "list", "List available authentication contexts", `List named authentication contexts that you created with `+"`"+`doctl auth init`+"`"+`.
+For details on creating an authentication context, see the help for `+"`"+`bl auth init`+"`"+`.`, Writer, false)
+	cmdAuthList := cmdBuilderWithInit(cmd, RunAuthList, "list", "List available authentication contexts", `List named authentication contexts that you created with `+"`"+`bl auth init`+"`"+`.
 
-To switch between the contexts use `+"`"+`doctl switch <name>`+"`"+`, where `+"`"+`<name>`+"`"+` is one of the contexts listed.
+To switch between the contexts use `+"`"+`bl switch <name>`+"`"+`, where `+"`"+`<name>`+"`"+` is one of the contexts listed.
 
-To create new contexts, see the help for `+"`"+`doctl auth init`+"`"+`.`, Writer, false, aliasOpt("ls"))
+To create new contexts, see the help for `+"`"+`bl auth init`+"`"+`.`, Writer, false, aliasOpt("ls"))
 	// The command runner expects that any command named "list" accepts a
 	// format flag, so we include here despite only supporting text output for
 	// this command.
-	AddStringFlag(cmdAuthList, doctl.ArgFormat, "", "", "Columns for output in a comma-separated list. Possible values: `text`")
+	AddStringFlag(cmdAuthList, blcli.ArgFormat, "", "", "Columns for output in a comma-separated list. Possible values: `text`")
 
 	return cmd
 }
 
-// RunAuthInit initializes the doctl config. Configuration is stored in $XDG_CONFIG_HOME/doctl. On Unix, if
-// XDG_CONFIG_HOME is not set, use $HOME/.config. On Windows use %APPDATA%/doctl/config.
+// RunAuthInit initializes the bl config. Configuration is stored in $XDG_CONFIG_HOME/bl. On Unix, if
+// XDG_CONFIG_HOME is not set, use $HOME/.config. On Windows use %APPDATA%/bl/config.
 func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig) error {
 	return func(c *CmdConfig) error {
 		token := c.getContextAccessToken()
@@ -117,7 +117,7 @@ func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig
 		if token == "" {
 			in, err := retrieveUserTokenFunc()
 			if err != nil {
-				return fmt.Errorf("Unable to read DigitalOcean access token: %s", err)
+				return fmt.Errorf("Unable to read BinaryLane access token: %s", err)
 			}
 			token = strings.TrimSpace(in)
 		} else {
@@ -130,9 +130,9 @@ func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig
 		fmt.Fprintln(c.Out)
 		fmt.Fprint(c.Out, "Validating token... ")
 
-		// need to initial the godo client since we've changed the configuration.
+		// need to initial the binarylane client since we've changed the configuration.
 		if err := c.initServices(c); err != nil {
-			return fmt.Errorf("Unable to initialize DigitalOcean API client with new token: %s", err)
+			return fmt.Errorf("Unable to initialize BinaryLane API client with new token: %s", err)
 		}
 
 		if _, err := c.Account().Get(); err != nil {
@@ -148,7 +148,7 @@ func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig
 	}
 }
 
-// RunAuthList lists all available auth contexts from the user's doctl config.
+// RunAuthList lists all available auth contexts from the user's bl config.
 func RunAuthList(c *CmdConfig) error {
 	context := Context
 	if context == "" {
@@ -164,7 +164,7 @@ func displayAuthContexts(out io.Writer, currentContext string, contexts map[stri
 	// Because the default context isn't present on the auth-contexts field,
 	// we add it manually so that it's always included in the output, and so
 	// we can check if it's the current context.
-	contexts[doctl.ArgDefaultContext] = true
+	contexts[blcli.ArgDefaultContext] = true
 
 	// Extract and sort the map keys so that the order that we display the
 	// auth contexts is consistent.

@@ -16,14 +16,14 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
-var testAccount = &do.Account{
-	Account: &godo.Account{
-		DropletLimit:  10,
+var testAccount = &bl.Account{
+	Account: &binarylane.Account{
+		ServerLimit:   10,
 		Email:         "user@example.com",
 		UUID:          "1234",
 		EmailVerified: true,

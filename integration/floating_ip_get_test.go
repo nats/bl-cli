@@ -74,18 +74,18 @@ var _ = suite("compute/floating-ip/get", func(t *testing.T, when spec.G, it spec
 
 const (
 	floatingIPGetOutput = `
-IP         Region    Droplet ID    Droplet Name
-1.1.1.1    nyc3
+IP         Region    Server ID    Server Name
+1.1.1.1    syd
 `
 	floatingIPGetResponse = `
 {
   "floating_ip": {
     "ip": "1.1.1.1",
-    "droplet": null,
+    "server": null,
     "region": {
-      "name": "New York 3",
-      "slug": "nyc3",
-      "sizes": [ "s-32vcpu-192gb" ],
+      "name": "Sydney",
+      "slug": "syd",
+      "sizes": [ "std-min" ],
       "features": [ "metadata" ],
       "available": true
     },

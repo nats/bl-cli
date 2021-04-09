@@ -14,7 +14,7 @@ limitations under the License.
 package commands
 
 import (
-	"github.com/digitalocean/doctl/commands/displayers"
+	"github.com/binarylane/bl-cli/commands/displayers"
 	"github.com/spf13/cobra"
 )
 
@@ -24,11 +24,11 @@ func Region() *Command {
 		Command: &cobra.Command{
 			Use:   "region",
 			Short: "Display commands to list datacenter regions",
-			Long:  "The subcommands of `doctl compute region` retrieve information about DigitalOcean datacenter regions.",
+			Long:  "The subcommands of `bl compute region` retrieve information about BinaryLane datacenter regions.",
 		},
 	}
 
-	regionDesc := `List DigitalOcean datacenter regions displaying their name, slug, and availability.
+	regionDesc := `List BinaryLane datacenter regions displaying their name, slug, and availability.
 
 Use the slugs displayed by this command to specify regions in other commands.
 `

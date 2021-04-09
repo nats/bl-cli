@@ -17,11 +17,11 @@ import (
 	"io"
 	"time"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type BillingHistory struct {
-	*do.BillingHistory
+	*bl.BillingHistory
 }
 
 var _ Displayable = &BillingHistory{}

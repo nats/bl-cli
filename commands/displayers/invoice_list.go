@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type InvoiceList struct {
-	*do.InvoiceList
+	*bl.InvoiceList
 }
 
 var _ Displayable = &InvoiceList{}

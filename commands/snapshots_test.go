@@ -16,7 +16,7 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -72,7 +72,7 @@ func TestSnapshotListRegion(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		tm.snapshots.EXPECT().List().Return(testSnapshotList, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Doit.Set(config.NS, blcli.ArgRegionSlug, "dev0")
 
 		err := RunSnapshotList(config)
 		assert.NoError(t, err)
@@ -107,7 +107,7 @@ func TestSnapshotDelete(t *testing.T) {
 		tm.snapshots.EXPECT().Delete(testSnapshot.ID).Return(nil)
 
 		config.Args = append(config.Args, testSnapshot.ID)
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunSnapshotDelete(config)
 		assert.NoError(t, err)

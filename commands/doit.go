@@ -20,7 +20,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,11 +31,11 @@ const (
 )
 
 var (
-	//DoitCmd is the root level doctl command that all other commands attach to
+	//DoitCmd is the root level bl command that all other commands attach to
 	DoitCmd = &Command{ // base command
 		Command: &cobra.Command{
-			Use:   "doctl",
-			Short: "doctl is a command line interface (CLI) for the DigitalOcean API.",
+			Use:   "bl",
+			Short: "bl is a command line interface (CLI) for the BinaryLane API.",
 		},
 	}
 
@@ -51,8 +51,6 @@ var (
 	Token string
 	//Trace toggles http tracing output
 	Trace bool
-	//Verbose toggle verbose output on and off
-	Verbose bool
 
 	requiredColor = color.New(color.Bold).SprintfFunc()
 )
@@ -70,15 +68,14 @@ func init() {
 	rootPFlagSet.StringVarP(&APIURL, "api-url", "u", "", "Override default API endpoint")
 	viper.BindPFlag("api-url", rootPFlagSet.Lookup("api-url"))
 
-	rootPFlagSet.StringVarP(&Token, doctl.ArgAccessToken, "t", "", "API V2 access token")
-	viper.BindPFlag(doctl.ArgAccessToken, rootPFlagSet.Lookup(doctl.ArgAccessToken))
+	rootPFlagSet.StringVarP(&Token, blcli.ArgAccessToken, "t", "", "API V2 access token")
+	viper.BindPFlag(blcli.ArgAccessToken, rootPFlagSet.Lookup(blcli.ArgAccessToken))
 
-	rootPFlagSet.StringVarP(&Output, doctl.ArgOutput, "o", "text", "Desired output format [text|json]")
-	viper.BindPFlag("output", rootPFlagSet.Lookup(doctl.ArgOutput))
+	rootPFlagSet.StringVarP(&Output, blcli.ArgOutput, "o", "text", "Desired output format [text|json]")
+	viper.BindPFlag("output", rootPFlagSet.Lookup(blcli.ArgOutput))
 
-	rootPFlagSet.StringVarP(&Context, doctl.ArgContext, "", "", "Specify a custom authentication context name")
+	rootPFlagSet.StringVarP(&Context, blcli.ArgContext, "", "", "Specify a custom authentication context name")
 	rootPFlagSet.BoolVarP(&Trace, "trace", "", false, "Show a log of network activity while performing a command")
-	rootPFlagSet.BoolVarP(&Verbose, doctl.ArgVerbose, "v", false, "Enable verbose output")
 
 	addCommands()
 
@@ -86,7 +83,7 @@ func init() {
 }
 
 func initConfig() {
-	viper.SetEnvPrefix("DIGITALOCEAN")
+	viper.SetEnvPrefix("BINARYLANE")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.SetConfigType("yaml")
@@ -95,7 +92,7 @@ func initConfig() {
 	viper.SetConfigFile(cfgFile)
 
 	viper.SetDefault("output", "text")
-	viper.SetDefault(doctl.ArgContext, doctl.ArgDefaultContext)
+	viper.SetDefault(blcli.ArgContext, blcli.ArgDefaultContext)
 
 	if _, err := os.Stat(cfgFile); err == nil {
 		if err := viper.ReadInConfig(); err != nil {
@@ -109,7 +106,7 @@ func defaultConfigHome() string {
 	cfgDir, err := os.UserConfigDir()
 	checkErr(err)
 
-	return filepath.Join(cfgDir, "doctl")
+	return filepath.Join(cfgDir, "bl")
 }
 
 func configHome() string {
@@ -131,20 +128,15 @@ func Execute() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	DoitCmd.AddCommand(Account())
-	DoitCmd.AddCommand(Apps())
 	DoitCmd.AddCommand(Auth())
 	DoitCmd.AddCommand(Balance())
 	DoitCmd.AddCommand(BillingHistory())
 	DoitCmd.AddCommand(Invoices())
 	DoitCmd.AddCommand(Completion())
 	DoitCmd.AddCommand(computeCmd())
-	DoitCmd.AddCommand(Kubernetes())
-	DoitCmd.AddCommand(Databases())
 	DoitCmd.AddCommand(Projects())
 	DoitCmd.AddCommand(Version())
-	DoitCmd.AddCommand(Registry())
 	DoitCmd.AddCommand(VPCs())
-	DoitCmd.AddCommand(OneClicks())
 }
 
 func computeCmd() *Command {
@@ -152,15 +144,13 @@ func computeCmd() *Command {
 		Command: &cobra.Command{
 			Use:   "compute",
 			Short: "Display commands that manage infrastructure",
-			Long:  `The subcommands under ` + "`" + `doctl compute` + "`" + ` are for managing DigitalOcean resources.`,
+			Long:  `The subcommands under ` + "`" + `bl compute` + "`" + ` are for managing BinaryLane resources.`,
 		},
 	}
 
 	cmd.AddCommand(Actions())
-	cmd.AddCommand(CDN())
-	cmd.AddCommand(Certificate())
-	cmd.AddCommand(DropletAction())
-	cmd.AddCommand(Droplet())
+	cmd.AddCommand(ServerAction())
+	cmd.AddCommand(Server())
 	cmd.AddCommand(Domain())
 	cmd.AddCommand(Firewall())
 	cmd.AddCommand(FloatingIP())
@@ -174,8 +164,6 @@ func computeCmd() *Command {
 	cmd.AddCommand(Snapshot())
 	cmd.AddCommand(SSHKeys())
 	cmd.AddCommand(Tags())
-	cmd.AddCommand(Volume())
-	cmd.AddCommand(VolumeAction())
 
 	// SSH is different since it doesn't have any subcommands. In this case, let's
 	// give it a parent at init time.

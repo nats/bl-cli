@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Action struct {
-	Actions do.Actions
+	Actions bl.Actions
 }
 
 var _ Displayable = &Action{}

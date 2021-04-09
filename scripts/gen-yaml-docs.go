@@ -19,7 +19,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/digitalocean/doctl/commands"
+	"github.com/binarylane/bl-cli/commands"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
@@ -55,7 +55,7 @@ func writeDocs(cmd *cobra.Command, dir string) error {
 			return err
 		}
 	}
-	// Set filename to doctl_namespace_command.yaml, and create file
+	// Set filename to bl_namespace_command.yaml, and create file
 	basename := strings.Replace(cmd.CommandPath(), " ", "_", -1) + ".yaml"
 	filename := filepath.Join(dir, basename)
 	f, err := os.Create(filename)

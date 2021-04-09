@@ -16,14 +16,14 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testRegion     = do.Region{Region: &godo.Region{Slug: "dev0"}}
-	testRegionList = do.Regions{testRegion}
+	testRegion     = bl.Region{Region: &binarylane.Region{Slug: "dev0"}}
+	testRegionList = bl.Regions{testRegion}
 )
 
 func TestRegionCommand(t *testing.T) {

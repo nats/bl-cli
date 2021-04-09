@@ -16,8 +16,8 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +33,7 @@ func TestImageActionsGet(t *testing.T) {
 
 		config.Args = append(config.Args, "1")
 
-		config.Doit.Set(config.NS, doctl.ArgActionID, 2)
+		config.Doit.Set(config.NS, blcli.ArgActionID, 2)
 
 		err := RunImageActionsGet(config)
 		assert.NoError(t, err)
@@ -43,12 +43,12 @@ func TestImageActionsGet(t *testing.T) {
 
 func TestImageActionsTransfer(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		ar := &godo.ActionRequest{"type": "transfer", "region": "dev0"}
+		ar := &binarylane.ActionRequest{"type": "transfer", "region": "dev0"}
 		tm.imageActions.EXPECT().Transfer(1, ar).Return(&testAction, nil)
 
 		config.Args = append(config.Args, "1")
 
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Doit.Set(config.NS, blcli.ArgRegionSlug, "dev0")
 
 		err := RunImageActionsTransfer(config)
 		assert.NoError(t, err)

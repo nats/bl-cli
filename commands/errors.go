@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 	"github.com/fatih/color"
 	"github.com/shiena/ansicolor"
 	"github.com/spf13/viper"
@@ -74,9 +74,9 @@ func checkErr(err error) {
 func ensureOneArg(c *CmdConfig) error {
 	switch count := len(c.Args); {
 	case count == 0:
-		return doctl.NewMissingArgsErr(c.NS)
+		return blcli.NewMissingArgsErr(c.NS)
 	case count > 1:
-		return doctl.NewTooManyArgsErr(c.NS)
+		return blcli.NewTooManyArgsErr(c.NS)
 	default:
 		return nil
 	}

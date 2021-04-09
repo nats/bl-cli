@@ -17,11 +17,11 @@ import (
 	"io"
 	"time"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Invoice struct {
-	*do.Invoice
+	*bl.Invoice
 }
 
 var _ Displayable = &Invoice{}

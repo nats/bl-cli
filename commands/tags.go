@@ -16,10 +16,10 @@ package commands
 import (
 	"fmt"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/bl-cli/commands/displayers"
+	"github.com/binarylane/go-binarylane"
 	"github.com/spf13/cobra"
 )
 
@@ -29,9 +29,9 @@ func Tags() *Command {
 		Command: &cobra.Command{
 			Use:   "tag",
 			Short: "Display commands to manage tags",
-			Long: `The sub-commands of ` + "`" + `doctl compute tag` + "`" + ` manage the tags on your account.
+			Long: `The sub-commands of ` + "`" + `bl compute tag` + "`" + ` manage the tags on your account.
 
-A tag is a label that can be applied to a resource (currently Droplets, images,
+A tag is a label that can be applied to a resource (currently Servers, images,
 volumes, volume snapshots, and database clusters) in order to better organize or
 facilitate the lookups and actions on it.
 
@@ -51,7 +51,7 @@ resources attribute with information about resources that have been tagged.`,
 	cmdRunTagDelete := CmdBuilder(cmd, RunCmdTagDelete, "delete <tag-name>...", "Delete a tag", `Use this command to delete a tag.
 
 Deleting a tag also removes the tag from all the resources that had been tagged with it.`, Writer)
-	AddBoolFlag(cmdRunTagDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Delete tag without confirmation prompt")
+	AddBoolFlag(cmdRunTagDelete, blcli.ArgForce, blcli.ArgShortForce, false, "Delete tag without confirmation prompt")
 
 	return cmd
 }
@@ -66,13 +66,13 @@ func RunCmdTagCreate(c *CmdConfig) error {
 	name := c.Args[0]
 	ts := c.Tags()
 
-	tcr := &godo.TagCreateRequest{Name: name}
+	tcr := &binarylane.TagCreateRequest{Name: name}
 	t, err := ts.Create(tcr)
 	if err != nil {
 		return err
 	}
 
-	return c.Display(&displayers.Tag{Tags: do.Tags{*t}})
+	return c.Display(&displayers.Tag{Tags: bl.Tags{*t}})
 }
 
 // RunCmdTagGet runs tag get.
@@ -89,7 +89,7 @@ func RunCmdTagGet(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Tag{Tags: do.Tags{*t}})
+	return c.Display(&displayers.Tag{Tags: bl.Tags{*t}})
 }
 
 // RunCmdTagList runs tag list.
@@ -106,10 +106,10 @@ func RunCmdTagList(c *CmdConfig) error {
 // RunCmdTagDelete runs tag delete.
 func RunCmdTagDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return blcli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Doit.GetBool(c.NS, blcli.ArgForce)
 	if err != nil {
 		return err
 	}

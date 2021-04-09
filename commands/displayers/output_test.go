@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDisplayerDisplay(t *testing.T) {
-	emptyVolumes := make([]do.Volume, 0)
-	var nilVolumes []do.Volume
+	emptyImages := make([]bl.Image, 0)
+	var nilImages []bl.Image
 
 	tests := []struct {
 		name         string
@@ -20,12 +20,12 @@ func TestDisplayerDisplay(t *testing.T) {
 	}{
 		{
 			name:         "displaying a non-nil slice of Volumes should return an empty JSON array",
-			item:         &Volume{Volumes: emptyVolumes},
+			item:         &Image{Images: emptyImages},
 			expectedJSON: `[]`,
 		},
 		{
 			name:         "displaying a nil slice of Volumes should return an empty JSON array",
-			item:         &Volume{Volumes: nilVolumes},
+			item:         &Image{Images: nilImages},
 			expectedJSON: `[]`,
 		},
 	}

@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Account struct {
-	*do.Account
+	*bl.Account
 }
 
 var _ Displayable = &Account{}
@@ -31,13 +31,13 @@ func (a *Account) JSON(out io.Writer) error {
 
 func (a *Account) Cols() []string {
 	return []string{
-		"Email", "DropletLimit", "EmailVerified", "UUID", "Status",
+		"Email", "ServerLimit", "EmailVerified", "UUID", "Status",
 	}
 }
 
 func (a *Account) ColMap() map[string]string {
 	return map[string]string{
-		"Email": "Email", "DropletLimit": "Droplet Limit", "EmailVerified": "Email Verified",
+		"Email": "Email", "ServerLimit": "Server Limit", "EmailVerified": "Email Verified",
 		"UUID": "UUID", "Status": "Status",
 	}
 }
@@ -45,7 +45,7 @@ func (a *Account) ColMap() map[string]string {
 func (a *Account) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	x := map[string]interface{}{
-		"Email": a.Email, "DropletLimit": a.DropletLimit,
+		"Email": a.Email, "ServerLimit": a.ServerLimit,
 		"EmailVerified": a.EmailVerified, "UUID": a.UUID,
 		"Status": a.Status,
 	}

@@ -17,11 +17,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type FloatingIP struct {
-	FloatingIPs do.FloatingIPs
+	FloatingIPs bl.FloatingIPs
 }
 
 var _ Displayable = &FloatingIP{}
@@ -32,13 +32,13 @@ func (fi *FloatingIP) JSON(out io.Writer) error {
 
 func (fi *FloatingIP) Cols() []string {
 	return []string{
-		"IP", "Region", "DropletID", "DropletName",
+		"IP", "Region", "ServerID", "ServerName",
 	}
 }
 
 func (fi *FloatingIP) ColMap() map[string]string {
 	return map[string]string{
-		"IP": "IP", "Region": "Region", "DropletID": "Droplet ID", "DropletName": "Droplet Name",
+		"IP": "IP", "Region": "Region", "ServerID": "Server ID", "ServerName": "Server Name",
 	}
 }
 
@@ -46,15 +46,15 @@ func (fi *FloatingIP) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 
 	for _, f := range fi.FloatingIPs {
-		var dropletID, dropletName string
-		if f.Droplet != nil {
-			dropletID = fmt.Sprintf("%d", f.Droplet.ID)
-			dropletName = f.Droplet.Name
+		var serverID, serverName string
+		if f.Server != nil {
+			serverID = fmt.Sprintf("%d", f.Server.ID)
+			serverName = f.Server.Name
 		}
 
 		o := map[string]interface{}{
 			"IP": f.IP, "Region": f.Region.Slug,
-			"DropletID": dropletID, "DropletName": dropletName,
+			"ServerID": serverID, "ServerName": serverName,
 		}
 
 		out = append(out, o)

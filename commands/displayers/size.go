@@ -17,11 +17,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Size struct {
-	Sizes do.Sizes
+	Sizes bl.Sizes
 }
 
 var _ Displayable = &Size{}

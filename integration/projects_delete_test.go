@@ -61,7 +61,7 @@ var _ = suite("projects/delete", func(t *testing.T, when spec.G, it spec.S) {
 			expect.NoError(err, fmt.Sprintf("received error output: %s", output))
 
 			shared := []func(string){
-				func(s string) { expect.Equal("doctl:", s) },
+				func(s string) { expect.Equal("bl:", s) },
 				func(s string) { expect.Regexp(`\d{4}/\d{2}/\d{2}`, s) },
 				func(s string) { expect.Regexp(`\d{2}:\d{2}:\d{2}`, s) },
 			}

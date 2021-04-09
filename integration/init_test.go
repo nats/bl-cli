@@ -14,10 +14,10 @@ import (
 	"github.com/sclevine/spec/report"
 )
 
-const packagePath string = "github.com/digitalocean/doctl/cmd/doctl"
+const packagePath string = "github.com/binarylane/bl-cli/cmd/bl"
 
 var (
-	suite           = spec.New("doctl", spec.Report(report.Terminal{}), spec.Random(), spec.Parallel())
+	suite           = spec.New("bl", spec.Report(report.Terminal{}), spec.Random(), spec.Parallel())
 	builtBinaryPath string
 )
 
@@ -26,7 +26,7 @@ func TestRun(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-	tmpDir, err := ioutil.TempDir("", "integration-doctl")
+	tmpDir, err := ioutil.TempDir("", "integration-bl")
 	if err != nil {
 		panic("failed to create temp dir")
 	}
@@ -42,7 +42,7 @@ func TestMain(m *testing.M) {
 	cmd.Env = append(os.Environ(), "CGO_ENABLED=0")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		panic(fmt.Sprintf("failed to build doctl: %s", output))
+		panic(fmt.Sprintf("failed to build bl: %s", output))
 	}
 
 	location, err := getDefaultConfigLocation()
@@ -81,5 +81,5 @@ func getDefaultConfigLocation() (string, error) {
 		return "", fmt.Errorf("failed to get user config dir: %s", err)
 	}
 
-	return filepath.Join(configDir, "doctl", "config.yaml"), nil
+	return filepath.Join(configDir, "bl", "config.yaml"), nil
 }

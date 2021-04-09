@@ -18,10 +18,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/bl-cli/commands/displayers"
+	"github.com/binarylane/go-binarylane"
 	"github.com/spf13/cobra"
 )
 
@@ -31,13 +31,13 @@ func Domain() *Command {
 		Command: &cobra.Command{
 			Use:   "domain",
 			Short: "Display commands that manage domains",
-			Long:  "Use the subcommands of `doctl compute domain` to manage domains you have purchased from a domain name registrar that you are managing through the DigitalOcean DNS interface.",
+			Long:  "Use the subcommands of `bl compute domain` to manage domains you have purchased from a domain name registrar that you are managing through the BinaryLane DNS interface.",
 		},
 	}
 
 	cmdDomainCreate := CmdBuilder(cmd, RunDomainCreate, "create <domain>", "Add a domain to your account", `Use this command to add a domain to your account.`, Writer,
 		aliasOpt("c"), displayerType(&displayers.Domain{}))
-	AddStringFlag(cmdDomainCreate, doctl.ArgIPAddress, "", "", "Creates an A record when an IPv4 address is provided")
+	AddStringFlag(cmdDomainCreate, blcli.ArgIPAddress, "", "", "Creates an A record when an IPv4 address is provided")
 
 	CmdBuilder(cmd, RunDomainList, "list", "List all domains on your account", `Use this command to retrieve a list of domains on your account.`, Writer,
 		aliasOpt("ls"), displayerType(&displayers.Domain{}))
@@ -46,13 +46,13 @@ func Domain() *Command {
 		aliasOpt("g"), displayerType(&displayers.Domain{}))
 
 	cmdRunDomainDelete := CmdBuilder(cmd, RunDomainDelete, "delete <domain>", "Permanently delete a domain from your account", `Use this command to delete a domain from your account. This is irreversible.`, Writer, aliasOpt("d", "rm"))
-	AddBoolFlag(cmdRunDomainDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Delete domain without confirmation prompt")
+	AddBoolFlag(cmdRunDomainDelete, blcli.ArgForce, blcli.ArgShortForce, false, "Delete domain without confirmation prompt")
 
 	cmdRecord := &Command{
 		Command: &cobra.Command{
 			Use:   "records",
 			Short: "Manage DNS records",
-			Long:  "Use the subcommands of `doctl compute domain records` to manage the DNS records for your domains.",
+			Long:  "Use the subcommands of `bl compute domain records` to manage the DNS records for your domains.",
 		},
 	}
 	cmd.AddCommand(cmdRecord)
@@ -62,32 +62,32 @@ func Domain() *Command {
 
 	cmdRecordCreate := CmdBuilder(cmdRecord, RunRecordCreate, "create <domain>", "Create a DNS record", `Use this command to create DNS records for a domain.`, Writer,
 		aliasOpt("c"), displayerType(&displayers.DomainRecord{}))
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordType, "", "", "The type of DNS record")
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordName, "", "", "The host name, alias, or service being defined by the record")
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordData, "", "", "Record data; varies depending on record type")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordPriority, "", 0, "Record priority")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordPort, "", 0, "The port value for an SRV record")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordTTL, "", 1800, "The record's Time To Live value, in seconds")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordWeight, "", 0, "The weight value for an SRV record")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordFlags, "", 0, "An unsigned integer between 0-255 used for CAA records")
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordTag, "", "", "The parameter tag for CAA records. Valid values are `issue`, `issuewild`, or `iodef`")
+	AddStringFlag(cmdRecordCreate, blcli.ArgRecordType, "", "", "The type of DNS record")
+	AddStringFlag(cmdRecordCreate, blcli.ArgRecordName, "", "", "The host name, alias, or service being defined by the record")
+	AddStringFlag(cmdRecordCreate, blcli.ArgRecordData, "", "", "Record data; varies depending on record type")
+	AddIntFlag(cmdRecordCreate, blcli.ArgRecordPriority, "", 0, "Record priority")
+	AddIntFlag(cmdRecordCreate, blcli.ArgRecordPort, "", 0, "The port value for an SRV record")
+	AddIntFlag(cmdRecordCreate, blcli.ArgRecordTTL, "", 1800, "The record's Time To Live value, in seconds")
+	AddIntFlag(cmdRecordCreate, blcli.ArgRecordWeight, "", 0, "The weight value for an SRV record")
+	AddIntFlag(cmdRecordCreate, blcli.ArgRecordFlags, "", 0, "An unsigned integer between 0-255 used for CAA records")
+	AddStringFlag(cmdRecordCreate, blcli.ArgRecordTag, "", "", "The parameter tag for CAA records. Valid values are `issue`, `issuewild`, or `iodef`")
 
 	cmdRunRecordDelete := CmdBuilder(cmdRecord, RunRecordDelete, "delete <domain> <record-id>...", "Delete a DNS record", `Use this command to delete DNS records for a domain.`, Writer,
 		aliasOpt("d"))
-	AddBoolFlag(cmdRunRecordDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Delete record without confirmation prompt")
+	AddBoolFlag(cmdRunRecordDelete, blcli.ArgForce, blcli.ArgShortForce, false, "Delete record without confirmation prompt")
 
 	cmdRecordUpdate := CmdBuilder(cmdRecord, RunRecordUpdate, "update <domain>", "Update a DNS record", `Use this command to update or change DNS records for a domain.`, Writer,
 		aliasOpt("u"), displayerType(&displayers.DomainRecord{}))
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordID, "", 0, "Record ID")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordType, "", "", "The type of DNS record")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordName, "", "", "The host name, alias, or service being defined by the record")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordData, "", "", "Record data; varies depending on record type")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordPriority, "", 0, "Record priority")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordPort, "", 0, "The port value for an SRV record")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordTTL, "", 1800, "The record's Time To Live value, in seconds")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordWeight, "", 0, "The weight value for an SRV record")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordFlags, "", 0, "An unsigned integer between 0-255 used for CAA records")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordTag, "", "", "The parameter tag for CAA records. Valid values are `issue`, `issuewild`, or `iodef`")
+	AddIntFlag(cmdRecordUpdate, blcli.ArgRecordID, "", 0, "Record ID")
+	AddStringFlag(cmdRecordUpdate, blcli.ArgRecordType, "", "", "The type of DNS record")
+	AddStringFlag(cmdRecordUpdate, blcli.ArgRecordName, "", "", "The host name, alias, or service being defined by the record")
+	AddStringFlag(cmdRecordUpdate, blcli.ArgRecordData, "", "", "Record data; varies depending on record type")
+	AddIntFlag(cmdRecordUpdate, blcli.ArgRecordPriority, "", 0, "Record priority")
+	AddIntFlag(cmdRecordUpdate, blcli.ArgRecordPort, "", 0, "The port value for an SRV record")
+	AddIntFlag(cmdRecordUpdate, blcli.ArgRecordTTL, "", 1800, "The record's Time To Live value, in seconds")
+	AddIntFlag(cmdRecordUpdate, blcli.ArgRecordWeight, "", 0, "The weight value for an SRV record")
+	AddIntFlag(cmdRecordUpdate, blcli.ArgRecordFlags, "", 0, "An unsigned integer between 0-255 used for CAA records")
+	AddStringFlag(cmdRecordUpdate, blcli.ArgRecordTag, "", "", "The parameter tag for CAA records. Valid values are `issue`, `issuewild`, or `iodef`")
 
 	return cmd
 }
@@ -107,7 +107,7 @@ func RunDomainCreate(c *CmdConfig) error {
 		return err
 	}
 
-	req := &godo.DomainCreateRequest{
+	req := &binarylane.DomainCreateRequest{
 		Name:      domainName,
 		IPAddress: ipAddress,
 	}
@@ -117,7 +117,7 @@ func RunDomainCreate(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Domain{Domains: do.Domains{*d}})
+	return c.Display(&displayers.Domain{Domains: bl.Domains{*d}})
 }
 
 // RunDomainList runs domain create.
@@ -153,7 +153,7 @@ func RunDomainGet(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.Domain{Domains: do.Domains{*d}}
+	item := &displayers.Domain{Domains: bl.Domains{*d}}
 	return c.Display(item)
 }
 
@@ -165,7 +165,7 @@ func RunDomainDelete(c *CmdConfig) error {
 	}
 	name := c.Args[0]
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Doit.GetBool(c.NS, blcli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -218,52 +218,52 @@ func RunRecordCreate(c *CmdConfig) error {
 
 	ds := c.Domains()
 
-	rType, err := c.Doit.GetString(c.NS, doctl.ArgRecordType)
+	rType, err := c.Doit.GetString(c.NS, blcli.ArgRecordType)
 	if err != nil {
 		return err
 	}
 
-	rName, err := c.Doit.GetString(c.NS, doctl.ArgRecordName)
+	rName, err := c.Doit.GetString(c.NS, blcli.ArgRecordName)
 	if err != nil {
 		return err
 	}
 
-	rData, err := c.Doit.GetString(c.NS, doctl.ArgRecordData)
+	rData, err := c.Doit.GetString(c.NS, blcli.ArgRecordData)
 	if err != nil {
 		return err
 	}
 
-	rPriority, err := c.Doit.GetInt(c.NS, doctl.ArgRecordPriority)
+	rPriority, err := c.Doit.GetInt(c.NS, blcli.ArgRecordPriority)
 	if err != nil {
 		return err
 	}
 
-	rPort, err := c.Doit.GetIntPtr(c.NS, doctl.ArgRecordPort)
+	rPort, err := c.Doit.GetIntPtr(c.NS, blcli.ArgRecordPort)
 	if err != nil {
 		return err
 	}
 
-	rTTL, err := c.Doit.GetInt(c.NS, doctl.ArgRecordTTL)
+	rTTL, err := c.Doit.GetInt(c.NS, blcli.ArgRecordTTL)
 	if err != nil {
 		return err
 	}
 
-	rWeight, err := c.Doit.GetInt(c.NS, doctl.ArgRecordWeight)
+	rWeight, err := c.Doit.GetInt(c.NS, blcli.ArgRecordWeight)
 	if err != nil {
 		return err
 	}
 
-	rFlags, err := c.Doit.GetInt(c.NS, doctl.ArgRecordFlags)
+	rFlags, err := c.Doit.GetInt(c.NS, blcli.ArgRecordFlags)
 	if err != nil {
 		return err
 	}
 
-	rTag, err := c.Doit.GetString(c.NS, doctl.ArgRecordTag)
+	rTag, err := c.Doit.GetString(c.NS, blcli.ArgRecordTag)
 	if err != nil {
 		return err
 	}
 
-	drcr := &do.DomainRecordEditRequest{
+	drcr := &bl.DomainRecordEditRequest{
 		Type:     rType,
 		Name:     rName,
 		Data:     rData,
@@ -284,7 +284,7 @@ func RunRecordCreate(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.DomainRecord{DomainRecords: do.DomainRecords{*r}}
+	item := &displayers.DomainRecord{DomainRecords: bl.DomainRecords{*r}}
 	return c.Display(item)
 
 }
@@ -292,17 +292,17 @@ func RunRecordCreate(c *CmdConfig) error {
 // RunRecordDelete deletes a domain record.
 func RunRecordDelete(c *CmdConfig) error {
 	if len(c.Args) < 2 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return blcli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Doit.GetBool(c.NS, blcli.ArgForce)
 	if err != nil {
 		return err
 	}
 
 	domainName, ids := c.Args[0], c.Args[1:]
 	if len(ids) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return blcli.NewMissingArgsErr(c.NS)
 	}
 
 	if force || AskForConfirmDelete("domain record", len(ids)) == nil {
@@ -337,57 +337,57 @@ func RunRecordUpdate(c *CmdConfig) error {
 
 	ds := c.Domains()
 
-	recordID, err := c.Doit.GetInt(c.NS, doctl.ArgRecordID)
+	recordID, err := c.Doit.GetInt(c.NS, blcli.ArgRecordID)
 	if err != nil {
 		return err
 	}
 
-	rType, err := c.Doit.GetString(c.NS, doctl.ArgRecordType)
+	rType, err := c.Doit.GetString(c.NS, blcli.ArgRecordType)
 	if err != nil {
 		return err
 	}
 
-	rName, err := c.Doit.GetString(c.NS, doctl.ArgRecordName)
+	rName, err := c.Doit.GetString(c.NS, blcli.ArgRecordName)
 	if err != nil {
 		return err
 	}
 
-	rData, err := c.Doit.GetString(c.NS, doctl.ArgRecordData)
+	rData, err := c.Doit.GetString(c.NS, blcli.ArgRecordData)
 	if err != nil {
 		return err
 	}
 
-	rPriority, err := c.Doit.GetInt(c.NS, doctl.ArgRecordPriority)
+	rPriority, err := c.Doit.GetInt(c.NS, blcli.ArgRecordPriority)
 	if err != nil {
 		return err
 	}
 
-	rPort, err := c.Doit.GetIntPtr(c.NS, doctl.ArgRecordPort)
+	rPort, err := c.Doit.GetIntPtr(c.NS, blcli.ArgRecordPort)
 	if err != nil {
 		return err
 	}
 
-	rTTL, err := c.Doit.GetInt(c.NS, doctl.ArgRecordTTL)
+	rTTL, err := c.Doit.GetInt(c.NS, blcli.ArgRecordTTL)
 	if err != nil {
 		return err
 	}
 
-	rWeight, err := c.Doit.GetInt(c.NS, doctl.ArgRecordWeight)
+	rWeight, err := c.Doit.GetInt(c.NS, blcli.ArgRecordWeight)
 	if err != nil {
 		return err
 	}
 
-	rFlags, err := c.Doit.GetInt(c.NS, doctl.ArgRecordFlags)
+	rFlags, err := c.Doit.GetInt(c.NS, blcli.ArgRecordFlags)
 	if err != nil {
 		return err
 	}
 
-	rTag, err := c.Doit.GetString(c.NS, doctl.ArgRecordTag)
+	rTag, err := c.Doit.GetString(c.NS, blcli.ArgRecordTag)
 	if err != nil {
 		return err
 	}
 
-	drcr := &do.DomainRecordEditRequest{
+	drcr := &bl.DomainRecordEditRequest{
 		Type:     rType,
 		Name:     rName,
 		Data:     rData,
@@ -404,6 +404,6 @@ func RunRecordUpdate(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.DomainRecord{DomainRecords: do.DomainRecords{*r}}
+	item := &displayers.DomainRecord{DomainRecords: bl.DomainRecords{*r}}
 	return c.Display(item)
 }

@@ -17,8 +17,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -93,11 +93,11 @@ func TestImagesNoID(t *testing.T) {
 
 func TestImagesUpdate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		iur := &godo.ImageUpdateRequest{Name: "new-name"}
+		iur := &binarylane.ImageUpdateRequest{Name: "new-name"}
 		tm.images.EXPECT().Update(testImage.ID, iur).Return(&testImage, nil)
 
 		config.Args = append(config.Args, strconv.Itoa(testImage.ID))
-		config.Doit.Set(config.NS, doctl.ArgImageName, "new-name")
+		config.Doit.Set(config.NS, blcli.ArgImageName, "new-name")
 		err := RunImagesUpdate(config)
 		assert.NoError(t, err)
 	})
@@ -108,7 +108,7 @@ func TestImagesDelete(t *testing.T) {
 		tm.images.EXPECT().Delete(testImage.ID).Return(nil)
 
 		config.Args = append(config.Args, strconv.Itoa(testImage.ID))
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunImagesDelete(config)
 		assert.NoError(t, err)
@@ -122,7 +122,7 @@ func TestImagesDeleteMultiple(t *testing.T) {
 		tm.images.EXPECT().Delete(testImageSecondary.ID).Return(nil)
 
 		config.Args = append(config.Args, strconv.Itoa(testImage.ID), strconv.Itoa(testImageSecondary.ID))
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunImagesDelete(config)
 		assert.NoError(t, err)
@@ -133,7 +133,7 @@ func TestImagesDeleteMultiple(t *testing.T) {
 func TestImagesCreate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		addr := "https://www.example.com/registry/demo-image.tar"
-		r := godo.CustomImageCreateRequest{
+		r := binarylane.CustomImageCreateRequest{
 			Name:   "test-image",
 			Url:    addr,
 			Region: "nyc1",
@@ -142,9 +142,9 @@ func TestImagesCreate(t *testing.T) {
 		tm.images.EXPECT().Create(&r).Return(&testImage, nil)
 
 		config.Args = append(config.Args, "test-image")
-		config.Doit.Set(config.NS, doctl.ArgImageName, "test-image")
-		config.Doit.Set(config.NS, doctl.ArgImageExternalURL, addr)
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "nyc1")
+		config.Doit.Set(config.NS, blcli.ArgImageName, "test-image")
+		config.Doit.Set(config.NS, blcli.ArgImageExternalURL, addr)
+		config.Doit.Set(config.NS, blcli.ArgRegionSlug, "nyc1")
 
 		err := RunImagesCreate(config)
 

@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Image struct {
-	Images do.Images
+	Images bl.Images
 }
 
 var _ Displayable = &Image{}

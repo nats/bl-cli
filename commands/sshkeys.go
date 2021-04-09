@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/bl-cli/commands/displayers"
+	"github.com/binarylane/go-binarylane"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"
 )
@@ -32,9 +32,9 @@ func SSHKeys() *Command {
 			Use:     "ssh-key",
 			Aliases: []string{"k"},
 			Short:   "Display commands to manage SSH keys on your account",
-			Long: `The sub-commands of ` + "`" + `doctl compute ssh-key` + "`" + ` manage the SSH keys on your account.
+			Long: `The sub-commands of ` + "`" + `bl compute ssh-key` + "`" + ` manage the SSH keys on your account.
 
-DigitalOcean allows you to add SSH public keys to the interface so that you can embed your public key into a Droplet at the time of creation. Only the public key is required to take advantage of this functionality. Note that this command does not add, delete, or otherwise modify any ssh keys that may be on existing Droplets.`,
+BinaryLane allows you to add SSH public keys to the interface so that you can embed your public key into a Server at the time of creation. Only the public key is required to take advantage of this functionality. Note that this command does not add, delete, or otherwise modify any ssh keys that may be on existing Servers.`,
 		},
 	}
 
@@ -48,25 +48,25 @@ DigitalOcean allows you to add SSH public keys to the interface so that you can 
 
 Specify a `+"`"+`<key-name>`+"`"+` for the key, and set the `+"`"+`--public-key`+"`"+` flag to a string with the contents of the key.
 
-Note that creating a key will not add it to any Droplets.`, Writer,
+Note that creating a key will not add it to any Servers.`, Writer,
 		aliasOpt("c"), displayerType(&displayers.Key{}))
-	AddStringFlag(cmdSSHKeysCreate, doctl.ArgKeyPublicKey, "", "", "Key contents", requiredOpt())
+	AddStringFlag(cmdSSHKeysCreate, blcli.ArgKeyPublicKey, "", "", "Key contents", requiredOpt())
 
 	cmdSSHKeysImport := CmdBuilder(cmd, RunKeyImport, "import <key-name>", "Import an SSH key from your computer to your account", `Use this command to add a new SSH key to your account, using a local public key file.
 
-Note that importing a key to your account will not add it to any Droplets`, Writer,
+Note that importing a key to your account will not add it to any Servers`, Writer,
 		aliasOpt("i"), displayerType(&displayers.Key{}))
-	AddStringFlag(cmdSSHKeysImport, doctl.ArgKeyPublicKeyFile, "", "", "Public key file", requiredOpt())
+	AddStringFlag(cmdSSHKeysImport, blcli.ArgKeyPublicKeyFile, "", "", "Public key file", requiredOpt())
 
 	cmdRunKeyDelete := CmdBuilder(cmd, RunKeyDelete, "delete <key-id|key-fingerprint>", "Permanently delete an SSH key from your account", `Use this command to permanently delete an SSH key from your account.
 
-Note that this does not delete an SSH key from any Droplets.`, Writer,
+Note that this does not delete an SSH key from any Servers.`, Writer,
 		aliasOpt("d"))
-	AddBoolFlag(cmdRunKeyDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Delete the key without a confirmation prompt")
+	AddBoolFlag(cmdRunKeyDelete, blcli.ArgForce, blcli.ArgShortForce, false, "Delete the key without a confirmation prompt")
 
 	cmdSSHKeysUpdate := CmdBuilder(cmd, RunKeyUpdate, "update <key-id|key-fingerprint>", "Update an SSH key's name", `Use this command to update the name of an SSH key.`, Writer,
 		aliasOpt("u"), displayerType(&displayers.Key{}))
-	AddStringFlag(cmdSSHKeysUpdate, doctl.ArgKeyName, "", "", "Key name", requiredOpt())
+	AddStringFlag(cmdSSHKeysUpdate, blcli.ArgKeyName, "", "", "Key name", requiredOpt())
 
 	return cmd
 }
@@ -100,7 +100,7 @@ func RunKeyGet(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.KeyGet{Keys: do.SSHKeys{*k}}
+	item := &displayers.KeyGet{Keys: bl.SSHKeys{*k}}
 	return c.Display(item)
 }
 
@@ -115,12 +115,12 @@ func RunKeyCreate(c *CmdConfig) error {
 
 	name := c.Args[0]
 
-	publicKey, err := c.Doit.GetString(c.NS, doctl.ArgKeyPublicKey)
+	publicKey, err := c.Doit.GetString(c.NS, blcli.ArgKeyPublicKey)
 	if err != nil {
 		return err
 	}
 
-	kcr := &godo.KeyCreateRequest{
+	kcr := &binarylane.KeyCreateRequest{
 		Name:      name,
 		PublicKey: publicKey,
 	}
@@ -130,7 +130,7 @@ func RunKeyCreate(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.Key{Keys: do.SSHKeys{*r}}
+	item := &displayers.Key{Keys: bl.SSHKeys{*r}}
 	return c.Display(item)
 }
 
@@ -143,7 +143,7 @@ func RunKeyImport(c *CmdConfig) error {
 		return err
 	}
 
-	keyPath, err := c.Doit.GetString(c.NS, doctl.ArgKeyPublicKeyFile)
+	keyPath, err := c.Doit.GetString(c.NS, blcli.ArgKeyPublicKeyFile)
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func RunKeyImport(c *CmdConfig) error {
 		keyName = comment
 	}
 
-	kcr := &godo.KeyCreateRequest{
+	kcr := &binarylane.KeyCreateRequest{
 		Name:      keyName,
 		PublicKey: string(keyFile),
 	}
@@ -174,7 +174,7 @@ func RunKeyImport(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.Key{Keys: do.SSHKeys{*r}}
+	item := &displayers.Key{Keys: bl.SSHKeys{*r}}
 	return c.Display(item)
 }
 
@@ -187,7 +187,7 @@ func RunKeyDelete(c *CmdConfig) error {
 		return err
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Doit.GetBool(c.NS, blcli.ArgForce)
 	if err != nil {
 		return nil
 	}
@@ -211,12 +211,12 @@ func RunKeyUpdate(c *CmdConfig) error {
 
 	rawKey := c.Args[0]
 
-	name, err := c.Doit.GetString(c.NS, doctl.ArgKeyName)
+	name, err := c.Doit.GetString(c.NS, blcli.ArgKeyName)
 	if err != nil {
 		return err
 	}
 
-	req := &godo.KeyUpdateRequest{
+	req := &binarylane.KeyUpdateRequest{
 		Name: name,
 	}
 
@@ -225,6 +225,6 @@ func RunKeyUpdate(c *CmdConfig) error {
 		return err
 	}
 
-	item := &displayers.Key{Keys: do.SSHKeys{*k}}
+	item := &displayers.Key{Keys: bl.SSHKeys{*k}}
 	return c.Display(item)
 }

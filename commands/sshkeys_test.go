@@ -19,15 +19,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testKey     = do.SSHKey{Key: &godo.Key{ID: 1, Fingerprint: "fingerprint"}}
-	testKeyList = do.SSHKeys{testKey}
+	testKey     = bl.SSHKey{Key: &binarylane.Key{ID: 1, Fingerprint: "fingerprint"}}
+	testKeyList = bl.SSHKeys{testKey}
 )
 
 func TestSSHKeysCommand(t *testing.T) {
@@ -69,12 +69,12 @@ func TestKeysGetByFingerprint(t *testing.T) {
 
 func TestKeysCreate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		kcr := &godo.KeyCreateRequest{Name: "the key", PublicKey: "fingerprint"}
+		kcr := &binarylane.KeyCreateRequest{Name: "the key", PublicKey: "fingerprint"}
 		tm.keys.EXPECT().Create(kcr).Return(&testKey, nil)
 
 		config.Args = append(config.Args, "the key")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyPublicKey, "fingerprint")
+		config.Doit.Set(config.NS, blcli.ArgKeyPublicKey, "fingerprint")
 
 		err := RunKeyCreate(config)
 		assert.NoError(t, err)
@@ -87,7 +87,7 @@ func TestKeysDeleteByID(t *testing.T) {
 
 		config.Args = append(config.Args, "1")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunKeyDelete(config)
 		assert.NoError(t, err)
@@ -100,7 +100,7 @@ func TestKeysDeleteByFingerprint(t *testing.T) {
 
 		config.Args = append(config.Args, "fingerprint")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunKeyDelete(config)
 		assert.NoError(t, err)
@@ -110,12 +110,12 @@ func TestKeysDeleteByFingerprint(t *testing.T) {
 
 func TestKeysUpdateByID(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		kur := &godo.KeyUpdateRequest{Name: "the key"}
+		kur := &binarylane.KeyUpdateRequest{Name: "the key"}
 		tm.keys.EXPECT().Update("1", kur).Return(&testKey, nil)
 
 		config.Args = append(config.Args, "1")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyName, "the key")
+		config.Doit.Set(config.NS, blcli.ArgKeyName, "the key")
 
 		err := RunKeyUpdate(config)
 		assert.NoError(t, err)
@@ -125,12 +125,12 @@ func TestKeysUpdateByID(t *testing.T) {
 
 func TestKeysUpdateByFingerprint(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		kur := &godo.KeyUpdateRequest{Name: "the key"}
+		kur := &binarylane.KeyUpdateRequest{Name: "the key"}
 		tm.keys.EXPECT().Update("fingerprint", kur).Return(&testKey, nil)
 
 		config.Args = append(config.Args, "fingerprint")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyName, "the key")
+		config.Doit.Set(config.NS, blcli.ArgKeyName, "the key")
 
 		err := RunKeyUpdate(config)
 		assert.NoError(t, err)
@@ -146,12 +146,12 @@ func TestSSHPublicKeyImportWithName(t *testing.T) {
 	defer os.Remove(path)
 
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		kcr := &godo.KeyCreateRequest{Name: "custom", PublicKey: pubkey}
+		kcr := &binarylane.KeyCreateRequest{Name: "custom", PublicKey: pubkey}
 		tm.keys.EXPECT().Create(kcr).Return(&testKey, nil)
 
 		config.Args = append(config.Args, "custom")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyPublicKeyFile, path)
+		config.Doit.Set(config.NS, blcli.ArgKeyPublicKeyFile, path)
 
 		err := RunKeyImport(config)
 		assert.NoError(t, err)

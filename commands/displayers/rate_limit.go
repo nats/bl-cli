@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type RateLimit struct {
-	*do.RateLimit
+	*bl.RateLimit
 }
 
 var _ Displayable = &RateLimit{}

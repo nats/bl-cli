@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Region struct {
-	Regions do.Regions
+	Regions bl.Regions
 }
 
 var _ Displayable = &Region{}

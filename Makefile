@@ -41,17 +41,17 @@ endif
 
 .PHONY: _build
 _build:
-	@echo "=> building doctl via go build"
+	@echo "=> building bl via go build"
 	@echo ""
 	@OUT_D=${OUT_D} GOOS=${GOOS} GOARCH=${GOARCH} scripts/_build.sh
-	@echo "built $(OUT_D)/doctl_$(GOOS)_$(GOARCH)"
+	@echo "built $(OUT_D)/bl_$(GOOS)_$(GOARCH)"
 
 .PHONY: build
 build: _build
 	@echo "==> build local version"
 	@echo ""
-	@mv $(OUT_D)/doctl_$(GOOS)_$(GOARCH) $(OUT_D)/doctl
-	@echo "installed as $(OUT_D)/doctl"
+	@mv $(OUT_D)/bl_$(GOOS)_$(GOARCH) $(OUT_D)/bl
+	@echo "installed as $(OUT_D)/bl"
 
 .PHONY: native
 native: build
@@ -65,28 +65,28 @@ _build_linux_amd64: _build
 
 .PHONY: docker_build
 docker_build:
-	@echo "==> build doctl in local docker container"
+	@echo "==> build bl in local docker container"
 	@echo ""
 	@mkdir -p $(OUT_D)
 	@docker build -f Dockerfile \
 		--build-arg GOARCH=$(GOARCH) \
-		. -t doctl_local
+		. -t bl_local
 	@docker run --rm \
 		-v $(OUT_D):/copy \
 		-it --entrypoint /bin/cp \
-		doctl_local /app/doctl /copy/
+		bl_local /app/bl /copy/
 	@docker run --rm \
 		-v $(OUT_D):/copy \
 		-it --entrypoint /bin/chown \
 		alpine -R $(shell whoami | id -u): /copy
 	@echo "Built binaries to $(OUT_D)"
-	@echo "Created a local Docker container. To use, run: docker run --rm -it doctl_local"
+	@echo "Created a local Docker container. To use, run: docker run --rm -it bl_local"
 
 .PHONY: test_unit
 test_unit:
 	@echo "==> run unit tests"
 	@echo ""
-	go test -mod=vendor ./commands/... ./do/... ./pkg/... .
+	go test -mod=vendor ./commands/... ./bl/... ./pkg/... .
 
 .PHONY: test_integration
 test_integration:
@@ -103,59 +103,19 @@ shellcheck:
 	@echo ""
 	@scripts/shell_check.sh
 
-.PHONY: snap_image
-snap_image:
-	@echo "==> build docker image for releasing snap"
-	@echo ""
-	@scripts/snap_image.sh
-
-.PHONY: _snap_image_version
-_snap_image_version:
-	@ORIGIN=${ORIGIN} SNAP_IMAGE=true scripts/version.sh
-
-.PHONY: build_local_snap
-build_local_snap:
-	@echo "==> build local snap using local image tagged doctl-snap-base"
-	@echo ""
-	@BUILD=local_snap scripts/snap_image.sh
-
-.PHONY: prerelease_snap_image
-prerelease_snap_image:
-	@echo "==> tag doctl-snap-base as a prerelease and push to dockerhub as latest"
-	@echo ""
-	@BUILD=pre scripts/snap_image.sh
-
-.PHONY: finalize_snap_image
-finalize_snap_image:
-	@echo "==> tag latest with most recent doctl version push to dockerhub"
-	@echo ""
-	@ORIGIN=${ORIGIN} BUILD=finalize scripts/snap_image.sh
-
-CHANNEL ?= stable
-
-.PHONY: _build_snap
-_build_snap:
-	@CHANNEL=${CHANNEL} scripts/_build_snap.sh
-
-.PHONY: snap
-snap:
-	@echo "==> publish snap (normally done by travis)"
-	@echo ""
-	@CHANNEL=${CHANNEL} scripts/snap.sh
-
 .PHONY: mocks
 mocks:
 	@echo "==> update mocks"
 	@echo ""
 	@scripts/regenmocks.sh
 
-.PHONY: _upgrade_godo
-_upgrade_godo:
-	go get -u github.com/digitalocean/godo
+.PHONY: _upgrade_binarylane
+_upgrade_binarylane:
+	go get -u github.com/binarylane/go-binarylane
 
-.PHONY: upgrade_godo
-upgrade_godo: _upgrade_godo vendor mocks
-	@echo "==> upgrade the godo version"
+.PHONY: upgrade_binarylane
+upgrade_binarylane: _upgrade_binarylane vendor mocks
+	@echo "==> upgrade the binarylane version"
 	@echo ""
 
 .PHONY: vendor
@@ -169,7 +129,7 @@ vendor:
 clean:
 	@echo "==> remove build / release artifacts"
 	@echo ""
-	@rm -rf builds dist out parts prime stage doctl_v*.snap
+	@rm -rf builds dist out
 
 .PHONY: _install_github_release_notes
 _install_github_release_notes:
@@ -187,7 +147,7 @@ changes: _install_github_release_notes
 
 .PHONY: version
 version:
-	@echo "==> doctl version"
+	@echo "==> bl version"
 	@echo ""
 	@ORIGIN=${ORIGIN} scripts/version.sh
 
@@ -208,13 +168,6 @@ _release:
 	@echo "=> releasing"
 	@echo ""
 	@scripts/release.sh
-
-.PHONY: _tag_and_release
-_tag_and_release: tag
-	@echo "=> DEPRECATED: BUMP=${BUMP} tag and release"
-	@echo ""
-	@$(MAKE) _release
-	@$(MAKE) snap
 
 .PHONY: release
 release:

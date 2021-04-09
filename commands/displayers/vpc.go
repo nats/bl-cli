@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type VPC struct {
-	VPCs do.VPCs
+	VPCs bl.VPCs
 }
 
 var _ Displayable = &VPC{}
@@ -32,7 +32,6 @@ func (v *VPC) JSON(out io.Writer) error {
 func (v *VPC) Cols() []string {
 	return []string{
 		"ID",
-		"URN",
 		"Name",
 		"Description",
 		"IPRange",
@@ -45,7 +44,6 @@ func (v *VPC) Cols() []string {
 func (v *VPC) ColMap() map[string]string {
 	return map[string]string{
 		"ID":          "ID",
-		"URN":         "URN",
 		"Name":        "Name",
 		"Description": "Description",
 		"IPRange":     "IP Range",
@@ -61,7 +59,6 @@ func (v *VPC) KV() []map[string]interface{} {
 	for _, v := range v.VPCs {
 		o := map[string]interface{}{
 			"ID":          v.ID,
-			"URN":         v.URN,
 			"Name":        v.Name,
 			"Description": v.Description,
 			"IPRange":     v.IPRange,

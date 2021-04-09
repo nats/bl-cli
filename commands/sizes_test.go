@@ -16,14 +16,14 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testSize     = do.Size{Size: &godo.Size{Slug: "small"}}
-	testSizeList = do.Sizes{testSize}
+	testSize     = bl.Size{Size: &binarylane.Size{Slug: "small"}}
+	testSizeList = bl.Sizes{testSize}
 )
 
 func TestSizeCommand(t *testing.T) {

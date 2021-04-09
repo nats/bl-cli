@@ -18,11 +18,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Snapshot struct {
-	Snapshots do.Snapshots
+	Snapshots bl.Snapshots
 }
 
 var _ Displayable = &Snapshot{}

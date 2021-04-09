@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Domain struct {
-	Domains do.Domains
+	Domains bl.Domains
 }
 
 var _ Displayable = &Domain{}
@@ -53,7 +53,7 @@ func (d *Domain) KV() []map[string]interface{} {
 }
 
 type DomainRecord struct {
-	DomainRecords do.DomainRecords
+	DomainRecords bl.DomainRecords
 }
 
 func (dr *DomainRecord) JSON(out io.Writer) error {

@@ -21,8 +21,8 @@ import (
 
 	"errors"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -35,7 +35,7 @@ func TestAuthCommand(t *testing.T) {
 
 func TestAuthInit(t *testing.T) {
 	cfw := cfgFileWriter
-	viper.Set(doctl.ArgAccessToken, nil)
+	viper.Set(blcli.ArgAccessToken, nil)
 	defer func() {
 		cfgFileWriter = cfw
 	}()
@@ -47,7 +47,7 @@ func TestAuthInit(t *testing.T) {
 	cfgFileWriter = func() (io.WriteCloser, error) { return &nopWriteCloser{Writer: ioutil.Discard}, nil }
 
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tm.account.EXPECT().Get().Return(&do.Account{}, nil)
+		tm.account.EXPECT().Get().Return(&bl.Account{}, nil)
 
 		err := RunAuthInit(retrieveUserTokenFunc)(config)
 		assert.NoError(t, err)
@@ -56,10 +56,10 @@ func TestAuthInit(t *testing.T) {
 
 func TestAuthInitWithProvidedToken(t *testing.T) {
 	cfw := cfgFileWriter
-	viper.Set(doctl.ArgAccessToken, "valid-token")
+	viper.Set(blcli.ArgAccessToken, "valid-token")
 	defer func() {
 		cfgFileWriter = cfw
-		viper.Set(doctl.ArgAccessToken, nil)
+		viper.Set(blcli.ArgAccessToken, nil)
 	}()
 
 	retrieveUserTokenFunc := func() (string, error) {
@@ -69,7 +69,7 @@ func TestAuthInitWithProvidedToken(t *testing.T) {
 	cfgFileWriter = func() (io.WriteCloser, error) { return &nopWriteCloser{Writer: ioutil.Discard}, nil }
 
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tm.account.EXPECT().Get().Return(&do.Account{}, nil)
+		tm.account.EXPECT().Get().Return(&bl.Account{}, nil)
 
 		err := RunAuthInit(retrieveUserTokenFunc)(config)
 		assert.NoError(t, err)
@@ -95,18 +95,18 @@ func Test_displayAuthContexts(t *testing.T) {
 		{
 			Name:    "default context only",
 			Out:     &bytes.Buffer{},
-			Context: doctl.ArgDefaultContext,
+			Context: blcli.ArgDefaultContext,
 			Contexts: map[string]interface{}{
-				doctl.ArgDefaultContext: true,
+				blcli.ArgDefaultContext: true,
 			},
 			Expected: "default (current)\n",
 		},
 		{
 			Name:    "default context and additional context",
 			Out:     &bytes.Buffer{},
-			Context: doctl.ArgDefaultContext,
+			Context: blcli.ArgDefaultContext,
 			Contexts: map[string]interface{}{
-				doctl.ArgDefaultContext: true,
+				blcli.ArgDefaultContext: true,
 				"test":                  true,
 			},
 			Expected: "default (current)\ntest\n",
@@ -116,7 +116,7 @@ func Test_displayAuthContexts(t *testing.T) {
 			Out:     &bytes.Buffer{},
 			Context: "test",
 			Contexts: map[string]interface{}{
-				doctl.ArgDefaultContext: true,
+				blcli.ArgDefaultContext: true,
 				"test":                  true,
 			},
 			Expected: "default\ntest (current)\n",
@@ -126,7 +126,7 @@ func Test_displayAuthContexts(t *testing.T) {
 			Out:     &bytes.Buffer{},
 			Context: "missing",
 			Contexts: map[string]interface{}{
-				doctl.ArgDefaultContext: true,
+				blcli.ArgDefaultContext: true,
 				"test":                  true,
 			},
 			Expected: "default\ntest\n",

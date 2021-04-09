@@ -17,13 +17,14 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"strconv"
 	"strings"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type LoadBalancer struct {
-	LoadBalancers do.LoadBalancers
+	LoadBalancers bl.LoadBalancers
 }
 
 var _ Displayable = &LoadBalancer{}
@@ -42,9 +43,9 @@ func (lb *LoadBalancer) Cols() []string {
 		"Algorithm",
 		"Region",
 		"Size",
-		"VPCUUID",
+		"VPCID",
 		"Tag",
-		"DropletIDs",
+		"ServerIDs",
 		"RedirectHttpToHttps",
 		"StickySessions",
 		"HealthCheck",
@@ -62,9 +63,9 @@ func (lb *LoadBalancer) ColMap() map[string]string {
 		"Algorithm":           "Algorithm",
 		"Region":              "Region",
 		"Size":                "Size",
-		"VPCUUID":             "VPC UUID",
+		"VPCID":               "VPC ID",
 		"Tag":                 "Tag",
-		"DropletIDs":          "Droplet IDs",
+		"ServerIDs":           "Server IDs",
 		"RedirectHttpToHttps": "SSL",
 		"StickySessions":      "Sticky Sessions",
 		"HealthCheck":         "Health Check",
@@ -81,6 +82,11 @@ func (lb *LoadBalancer) KV() []map[string]interface{} {
 			forwardingRules = append(forwardingRules, prettyPrintStruct(r))
 		}
 
+		vpcID := ""
+		if l.VPCID != 0 {
+			vpcID = strconv.Itoa(l.VPCID)
+		}
+
 		o := map[string]interface{}{
 			"ID":                  l.ID,
 			"IP":                  l.IP,
@@ -90,9 +96,9 @@ func (lb *LoadBalancer) KV() []map[string]interface{} {
 			"Algorithm":           l.Algorithm,
 			"Region":              l.Region.Slug,
 			"Size":                l.SizeSlug,
-			"VPCUUID":             l.VPCUUID,
+			"VPCID":               vpcID,
 			"Tag":                 l.Tag,
-			"DropletIDs":          strings.Trim(strings.Replace(fmt.Sprint(l.DropletIDs), " ", ",", -1), "[]"),
+			"ServerIDs":           strings.Trim(strings.Replace(fmt.Sprint(l.ServerIDs), " ", ",", -1), "[]"),
 			"RedirectHttpToHttps": l.RedirectHttpToHttps,
 			"StickySessions":      prettyPrintStruct(l.StickySessions),
 			"HealthCheck":         prettyPrintStruct(l.HealthCheck),

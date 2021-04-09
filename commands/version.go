@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 	"github.com/spf13/cobra"
 )
 
@@ -27,28 +27,28 @@ func Version() *Command {
 		Command: &cobra.Command{
 			Use:   "version",
 			Short: "Show the current version",
-			Long:  "The `doctl version` command displays the version of the doctl software.",
+			Long:  "The `bl version` command displays the version of the bl software.",
 			Run: func(cmd *cobra.Command, args []string) {
-				if doctl.Build != "" {
-					doctl.DoitVersion.Build = doctl.Build
+				if blcli.Build != "" {
+					blcli.DoitVersion.Build = blcli.Build
 				}
-				if doctl.Major != "" {
-					i, _ := strconv.Atoi(doctl.Major)
-					doctl.DoitVersion.Major = i
+				if blcli.Major != "" {
+					i, _ := strconv.Atoi(blcli.Major)
+					blcli.DoitVersion.Major = i
 				}
-				if doctl.Minor != "" {
-					i, _ := strconv.Atoi(doctl.Minor)
-					doctl.DoitVersion.Minor = i
+				if blcli.Minor != "" {
+					i, _ := strconv.Atoi(blcli.Minor)
+					blcli.DoitVersion.Minor = i
 				}
-				if doctl.Patch != "" {
-					i, _ := strconv.Atoi(doctl.Patch)
-					doctl.DoitVersion.Patch = i
+				if blcli.Patch != "" {
+					i, _ := strconv.Atoi(blcli.Patch)
+					blcli.DoitVersion.Patch = i
 				}
-				if doctl.Label != "" {
-					doctl.DoitVersion.Label = doctl.Label
+				if blcli.Label != "" {
+					blcli.DoitVersion.Label = blcli.Label
 				}
 
-				fmt.Println(doctl.DoitVersion.Complete(&doctl.GithubLatestVersioner{}))
+				fmt.Println(blcli.DoitVersion.Complete(&blcli.GithubLatestVersioner{}))
 			},
 		},
 	}

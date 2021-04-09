@@ -16,19 +16,19 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testDomain     = do.Domain{Domain: &godo.Domain{Name: "example.com"}}
-	testDomainList = do.Domains{
+	testDomain     = bl.Domain{Domain: &binarylane.Domain{Name: "example.com"}}
+	testDomainList = bl.Domains{
 		testDomain,
 	}
-	testRecord     = do.DomainRecord{DomainRecord: &godo.DomainRecord{ID: 1}}
-	testRecordList = do.DomainRecords{testRecord}
+	testRecord     = bl.DomainRecord{DomainRecord: &binarylane.DomainRecord{ID: 1}}
+	testRecordList = bl.DomainRecords{testRecord}
 )
 
 func TestDomainsCommand(t *testing.T) {
@@ -39,11 +39,11 @@ func TestDomainsCommand(t *testing.T) {
 
 func TestDomainsCreate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		dcr := &godo.DomainCreateRequest{Name: "example.com", IPAddress: "127.0.0.1"}
+		dcr := &binarylane.DomainCreateRequest{Name: "example.com", IPAddress: "127.0.0.1"}
 		tm.domains.EXPECT().Create(dcr).Return(&testDomain, nil)
 
 		config.Args = append(config.Args, testDomain.Name)
-		config.Doit.Set(config.NS, doctl.ArgIPAddress, "127.0.0.1")
+		config.Doit.Set(config.NS, blcli.ArgIPAddress, "127.0.0.1")
 		err := RunDomainCreate(config)
 		assert.NoError(t, err)
 	})
@@ -81,7 +81,7 @@ func TestDomainsDelete(t *testing.T) {
 
 		config.Args = append(config.Args, testDomain.Name)
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunDomainDelete(config)
 		assert.NoError(t, err)
@@ -116,13 +116,13 @@ func TestRecordList_RequiredArguments(t *testing.T) {
 func TestRecordsCreate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		port := 0
-		dcer := &do.DomainRecordEditRequest{Type: "A", Name: "foo.example.com.", Data: "192.168.1.1", Priority: 0, Port: &port, TTL: 0, Weight: 0}
+		dcer := &bl.DomainRecordEditRequest{Type: "A", Name: "foo.example.com.", Data: "192.168.1.1", Priority: 0, Port: &port, TTL: 0, Weight: 0}
 		tm.domains.EXPECT().CreateRecord("example.com", dcer).Return(&testRecord, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRecordType, "A")
-		config.Doit.Set(config.NS, doctl.ArgRecordName, "foo.example.com.")
-		config.Doit.Set(config.NS, doctl.ArgRecordData, "192.168.1.1")
-		config.Doit.Set(config.NS, doctl.ArgRecordPort, "0")
+		config.Doit.Set(config.NS, blcli.ArgRecordType, "A")
+		config.Doit.Set(config.NS, blcli.ArgRecordName, "foo.example.com.")
+		config.Doit.Set(config.NS, blcli.ArgRecordData, "192.168.1.1")
+		config.Doit.Set(config.NS, blcli.ArgRecordPort, "0")
 
 		config.Args = append(config.Args, "example.com")
 
@@ -144,7 +144,7 @@ func TestRecordsDelete(t *testing.T) {
 
 		config.Args = append(config.Args, "example.com", "1")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunRecordDelete(config)
 		assert.NoError(t, err)
@@ -154,14 +154,14 @@ func TestRecordsDelete(t *testing.T) {
 func TestRecordsUpdate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		port := 0
-		dcer := &do.DomainRecordEditRequest{Type: "A", Name: "foo.example.com.", Data: "192.168.1.1", Priority: 0, Port: &port, TTL: 0, Weight: 0}
+		dcer := &bl.DomainRecordEditRequest{Type: "A", Name: "foo.example.com.", Data: "192.168.1.1", Priority: 0, Port: &port, TTL: 0, Weight: 0}
 		tm.domains.EXPECT().EditRecord("example.com", 1, dcer).Return(&testRecord, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRecordID, 1)
-		config.Doit.Set(config.NS, doctl.ArgRecordType, "A")
-		config.Doit.Set(config.NS, doctl.ArgRecordName, "foo.example.com.")
-		config.Doit.Set(config.NS, doctl.ArgRecordData, "192.168.1.1")
-		config.Doit.Set(config.NS, doctl.ArgRecordPort, "0")
+		config.Doit.Set(config.NS, blcli.ArgRecordID, 1)
+		config.Doit.Set(config.NS, blcli.ArgRecordType, "A")
+		config.Doit.Set(config.NS, blcli.ArgRecordName, "foo.example.com.")
+		config.Doit.Set(config.NS, blcli.ArgRecordData, "192.168.1.1")
+		config.Doit.Set(config.NS, blcli.ArgRecordPort, "0")
 
 		config.Args = append(config.Args, "example.com")
 

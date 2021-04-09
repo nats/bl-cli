@@ -19,8 +19,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/pluginhost"
+	"github.com/binarylane/bl-cli/commands/displayers"
+	"github.com/binarylane/bl-cli/pluginhost"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ func Plugin() *Command {
 			Long:       "plugin is used to access plugin commands",
 			Aliases:    []string{"p"},
 			Hidden:     true,
-			Deprecated: "This command will be removed in a future version of doctl",
+			Deprecated: "This command will be removed in a future version of bl",
 		},
 	}
 

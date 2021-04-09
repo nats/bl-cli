@@ -19,7 +19,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/digitalocean/doctl/pkg/runner"
+	"github.com/binarylane/bl-cli/pkg/runner"
 	"github.com/fatih/color"
 )
 
@@ -74,7 +74,7 @@ func (r *Runner) Run() error {
 		_, isSnap := os.LookupEnv("SNAP")
 
 		if os.IsPermission(err) && isSnap {
-			msg := "Using the doctl Snap? Grant access to the ssh-keys interface with this command: sudo snap connect doctl:ssh-keys"
+			msg := "Using the bl Snap? Grant access to the ssh-keys interface with this command: sudo snap connect bl:ssh-keys"
 			fmt.Fprintf(color.Error, "%s: %s\n", color.YellowString("Warning"), msg)
 			return err
 		}

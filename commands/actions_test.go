@@ -17,15 +17,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testAction     = do.Action{Action: &godo.Action{ID: 1, Region: &godo.Region{Slug: "dev0"}}}
-	testActionList = do.Actions{
+	testAction     = bl.Action{Action: &binarylane.Action{ID: 1, Region: &binarylane.Region{Slug: "dev0"}}}
+	testActionList = bl.Actions{
 		testAction,
 	}
 )
@@ -75,25 +75,25 @@ func Test_filterActions(t *testing.T) {
 		{len: 2, status: "completed", desc: "by status"},
 	}
 
-	actions := do.Actions{
-		{Action: &godo.Action{
+	actions := bl.Actions{
+		{Action: &binarylane.Action{
 			ResourceType: "foo", RegionSlug: "nyc1", Status: "completed", Type: "alpha",
-			CompletedAt: &godo.Timestamp{Time: time.Date(2015, time.April, 2, 12, 0, 0, 0, time.UTC)},
+			CompletedAt: &binarylane.Timestamp{Time: time.Date(2015, time.April, 2, 12, 0, 0, 0, time.UTC)},
 		}},
-		{Action: &godo.Action{
+		{Action: &binarylane.Action{
 			ResourceType: "bar", RegionSlug: "fra1", Status: "completed", Type: "beta",
-			CompletedAt: &godo.Timestamp{Time: time.Date(2016, time.April, 2, 12, 0, 0, 0, time.UTC)},
+			CompletedAt: &binarylane.Timestamp{Time: time.Date(2016, time.April, 2, 12, 0, 0, 0, time.UTC)},
 		}},
 	}
 
 	for _, c := range cases {
 		withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-			config.Doit.Set(config.NS, doctl.ArgActionResourceType, c.resourceType)
-			config.Doit.Set(config.NS, doctl.ArgActionRegion, c.region)
-			config.Doit.Set(config.NS, doctl.ArgActionAfter, c.after)
-			config.Doit.Set(config.NS, doctl.ArgActionBefore, c.before)
-			config.Doit.Set(config.NS, doctl.ArgActionStatus, c.status)
-			config.Doit.Set(config.NS, doctl.ArgActionType, c.actionType)
+			config.Doit.Set(config.NS, blcli.ArgActionResourceType, c.resourceType)
+			config.Doit.Set(config.NS, blcli.ArgActionRegion, c.region)
+			config.Doit.Set(config.NS, blcli.ArgActionAfter, c.after)
+			config.Doit.Set(config.NS, blcli.ArgActionBefore, c.before)
+			config.Doit.Set(config.NS, blcli.ArgActionStatus, c.status)
+			config.Doit.Set(config.NS, blcli.ArgActionType, c.actionType)
 
 			newActions, err := filterActionList(config, actions)
 			assert.NoError(t, err)

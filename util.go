@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package doctl
+package blcli
 
-import "github.com/digitalocean/doctl/pkg/runner"
+import "github.com/binarylane/bl-cli/pkg/runner"
 
 // MockRunner is an implemenation of Runner for mocking.
 type MockRunner struct {

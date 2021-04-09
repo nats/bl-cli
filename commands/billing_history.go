@@ -14,7 +14,7 @@ limitations under the License.
 package commands
 
 import (
-	"github.com/digitalocean/doctl/commands/displayers"
+	"github.com/binarylane/bl-cli/commands/displayers"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,7 @@ func BillingHistory() *Command {
 		Command: &cobra.Command{
 			Use:     "billing-history",
 			Short:   "Display commands for retrieving your billing history",
-			Long:    "The subcommands of `doctl billing-history` are used to access the billing history for your DigitalOcean account.",
+			Long:    "The subcommands of `bl billing-history` are used to access the billing history for your BinaryLane account.",
 			Aliases: []string{"bh"},
 		},
 	}

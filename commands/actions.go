@@ -18,9 +18,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/bl-cli/commands/displayers"
 	"github.com/spf13/cobra"
 )
 
@@ -30,9 +30,9 @@ func Actions() *Command {
 		Command: &cobra.Command{
 			Use:   "action",
 			Short: "Display commands for retrieving resource action history",
-			Long: `The sub-commands of ` + "`" + `doctl compute action` + "`" + ` retrieve the history of actions taken on your resources.
+			Long: `The sub-commands of ` + "`" + `bl compute action` + "`" + ` retrieve the history of actions taken on your resources.
 
-This can be filtered to a specific action. For example, while ` + "`" + `doctl compute action list` + "`" + ` will list all of the actions taken on all of the resources in your account, ` + "`" + `doctl compute action get <action-id>` + "`" + ` will retrieve details for a specific action.`,
+This can be filtered to a specific action. For example, while ` + "`" + `bl compute action list` + "`" + ` will list all of the actions taken on all of the resources in your account, ` + "`" + `bl compute action get <action-id>` + "`" + ` will retrieve details for a specific action.`,
 		},
 	}
 
@@ -44,7 +44,7 @@ This can be filtered to a specific action. For example, while ` + "`" + `doctl c
 - The Date/Time when the action started, in RFC3339 format
 - The Date/Time when the action completed, in RFC3339 format
 - The resource ID of the resource upon which the action was taken
-- The resource type (Droplet, backend)
+- The resource type (Server, backend)
 - The region in which the action took place (nyc3, sfo2, etc)`
 
 	CmdBuilder(cmd, RunCmdActionGet, "get <action-id>", "Retrieve details about a specific action", `This command retrieves the following details about a specific action taken on one of your resources:`+actionDetails, Writer,
@@ -52,18 +52,18 @@ This can be filtered to a specific action. For example, while ` + "`" + `doctl c
 
 	cmdActionList := CmdBuilder(cmd, RunCmdActionList, "list", "Retrieve a  list of all recent actions taken on your resources", `This command retrieves a list of all actions taken on your resources. The following details are provided:`+actionDetails, Writer,
 		aliasOpt("ls"), displayerType(&displayers.Action{}))
-	AddStringFlag(cmdActionList, doctl.ArgActionResourceType, "", "", "Action resource type")
-	AddStringFlag(cmdActionList, doctl.ArgActionRegion, "", "", "Action region")
-	AddStringFlag(cmdActionList, doctl.ArgActionAfter, "", "", "Action completed after in RFC3339 format")
-	AddStringFlag(cmdActionList, doctl.ArgActionBefore, "", "", "Action completed before in RFC3339 format")
-	AddStringFlag(cmdActionList, doctl.ArgActionStatus, "", "", "Action status")
-	AddStringFlag(cmdActionList, doctl.ArgActionType, "", "", "Action type")
+	AddStringFlag(cmdActionList, blcli.ArgActionResourceType, "", "", "Action resource type")
+	AddStringFlag(cmdActionList, blcli.ArgActionRegion, "", "", "Action region")
+	AddStringFlag(cmdActionList, blcli.ArgActionAfter, "", "", "Action completed after in RFC3339 format")
+	AddStringFlag(cmdActionList, blcli.ArgActionBefore, "", "", "Action completed before in RFC3339 format")
+	AddStringFlag(cmdActionList, blcli.ArgActionStatus, "", "", "Action status")
+	AddStringFlag(cmdActionList, blcli.ArgActionType, "", "", "Action type")
 
 	cmdActionWait := CmdBuilder(cmd, RunCmdActionWait, "wait <action-id>", "Block thread until an action completes", `The command blocks the current thread, returning when an action completes.
 
-For example, if you find an action when calling `+"`"+`doctl compute action list`+"`"+` that has a status of `+"`"+`in-progress`+"`"+`, you can note the action ID and call `+"`"+`doctl compute action wait <action-id>`+"`"+`, and doctl will appear to "hang" until the action has completed. This can be useful for scripting purposes.`, Writer,
+For example, if you find an action when calling `+"`"+`bl compute action list`+"`"+` that has a status of `+"`"+`in-progress`+"`"+`, you can note the action ID and call `+"`"+`bl compute action wait <action-id>`+"`"+`, and bl will appear to "hang" until the action has completed. This can be useful for scripting purposes.`, Writer,
 		aliasOpt("w"), displayerType(&displayers.Action{}))
-	AddIntFlag(cmdActionWait, doctl.ArgPollTime, "", 5, "Re-poll time in seconds")
+	AddIntFlag(cmdActionWait, blcli.ArgPollTime, "", 5, "Re-poll time in seconds")
 
 	return cmd
 }
@@ -86,7 +86,7 @@ func RunCmdActionList(c *CmdConfig) error {
 	return c.Display(item)
 }
 
-type actionsByCompletedAt do.Actions
+type actionsByCompletedAt bl.Actions
 
 func (a actionsByCompletedAt) Len() int {
 	return len(a)
@@ -98,29 +98,29 @@ func (a actionsByCompletedAt) Less(i, j int) bool {
 	return a[i].CompletedAt.Before(a[j].CompletedAt.Time)
 }
 
-func filterActionList(c *CmdConfig, in do.Actions) (do.Actions, error) {
-	resourceType, err := c.Doit.GetString(c.NS, doctl.ArgActionResourceType)
+func filterActionList(c *CmdConfig, in bl.Actions) (bl.Actions, error) {
+	resourceType, err := c.Doit.GetString(c.NS, blcli.ArgActionResourceType)
 	if err != nil {
 		return nil, err
 	}
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgActionRegion)
+	region, err := c.Doit.GetString(c.NS, blcli.ArgActionRegion)
 	if err != nil {
 		return nil, err
 	}
 
-	status, err := c.Doit.GetString(c.NS, doctl.ArgActionStatus)
+	status, err := c.Doit.GetString(c.NS, blcli.ArgActionStatus)
 	if err != nil {
 		return nil, err
 	}
 
-	actionType, err := c.Doit.GetString(c.NS, doctl.ArgActionType)
+	actionType, err := c.Doit.GetString(c.NS, blcli.ArgActionType)
 	if err != nil {
 		return nil, err
 	}
 
 	var before, after time.Time
-	beforeStr, err := c.Doit.GetString(c.NS, doctl.ArgActionBefore)
+	beforeStr, err := c.Doit.GetString(c.NS, blcli.ArgActionBefore)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func filterActionList(c *CmdConfig, in do.Actions) (do.Actions, error) {
 		}
 	}
 
-	afterStr, err := c.Doit.GetString(c.NS, doctl.ArgActionAfter)
+	afterStr, err := c.Doit.GetString(c.NS, blcli.ArgActionAfter)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func filterActionList(c *CmdConfig, in do.Actions) (do.Actions, error) {
 		}
 	}
 
-	out := do.Actions{}
+	out := bl.Actions{}
 
 	for _, a := range in {
 		match := true
@@ -205,7 +205,7 @@ func RunCmdActionGet(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Action{Actions: do.Actions{*a}})
+	return c.Display(&displayers.Action{Actions: bl.Actions{*a}})
 }
 
 // RunCmdActionWait waits for an action to complete or error.
@@ -220,7 +220,7 @@ func RunCmdActionWait(c *CmdConfig) error {
 		return err
 	}
 
-	pollTime, err := c.Doit.GetInt(c.NS, doctl.ArgPollTime)
+	pollTime, err := c.Doit.GetInt(c.NS, blcli.ArgPollTime)
 	if err != nil {
 		return err
 	}
@@ -230,13 +230,13 @@ func RunCmdActionWait(c *CmdConfig) error {
 		return err
 	}
 
-	return c.Display(&displayers.Action{Actions: do.Actions{*a}})
+	return c.Display(&displayers.Action{Actions: bl.Actions{*a}})
 }
 
-func actionWait(c *CmdConfig, actionID, pollTime int) (*do.Action, error) {
+func actionWait(c *CmdConfig, actionID, pollTime int) (*bl.Action, error) {
 	as := c.Actions()
 
-	var a *do.Action
+	var a *bl.Action
 	var err error
 
 	for {

@@ -17,28 +17,28 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testTag = do.Tag{
-		Tag: &godo.Tag{
+	testTag = bl.Tag{
+		Tag: &binarylane.Tag{
 			Name: "mytag",
-			Resources: &godo.TaggedResources{
+			Resources: &binarylane.TaggedResources{
 				Count:         5,
-				LastTaggedURI: fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d", testDroplet.ID),
-				Droplets: &godo.TaggedDropletsResources{
+				LastTaggedURI: fmt.Sprintf("https://api.binarylane.com.au/v2/servers/%d", testServer.ID),
+				Servers: &binarylane.TaggedServersResources{
 					Count:      5,
-					LastTagged: testDroplet.Droplet,
+					LastTagged: testServer.Server,
 				},
-				Images: &godo.TaggedImagesResources{
+				Images: &binarylane.TaggedImagesResources{
 					Count: 0,
 				},
 			}}}
-	testTagList = do.Tags{
+	testTagList = bl.Tags{
 		testTag,
 	}
 )
@@ -71,7 +71,7 @@ func TestTagList(t *testing.T) {
 
 func TestTagCreate(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tcr := godo.TagCreateRequest{Name: "new-tag"}
+		tcr := binarylane.TagCreateRequest{Name: "new-tag"}
 		tm.tags.EXPECT().Create(&tcr).Return(&testTag, nil)
 		config.Args = append(config.Args, "new-tag")
 
@@ -85,7 +85,7 @@ func TestTagDelete(t *testing.T) {
 		tm.tags.EXPECT().Delete("my-tag").Return(nil)
 		config.Args = append(config.Args, "my-tag")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunCmdTagDelete(config)
 		assert.NoError(t, err)
@@ -98,7 +98,7 @@ func TestTagDeleteMultiple(t *testing.T) {
 		tm.tags.EXPECT().Delete("my-tag-secondary").Return(nil)
 		config.Args = append(config.Args, "my-tag", "my-tag-secondary")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Doit.Set(config.NS, blcli.ArgForce, true)
 
 		err := RunCmdTagDelete(config)
 		assert.NoError(t, err)

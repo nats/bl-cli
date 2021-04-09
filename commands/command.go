@@ -18,12 +18,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 
 	"github.com/spf13/cobra"
 )
 
-// Command is a wrapper around cobra.Command that adds doctl specific
+// Command is a wrapper around cobra.Command that adds bl specific
 // functionality.
 type Command struct {
 	*cobra.Command
@@ -59,7 +59,7 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, shortdesc string
 		Run: func(cmd *cobra.Command, args []string) {
 			c, err := NewCmdConfig(
 				cmdNS(cmd),
-				&doctl.LiveConfig{},
+				&blcli.LiveConfig{},
 				out,
 				args,
 				initCmd,
@@ -84,8 +84,8 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, shortdesc string
 	if cols := c.fmtCols; cols != nil {
 		formatHelp := fmt.Sprintf("Columns for output in a comma-separated list. Possible values: `%s`",
 			strings.Join(cols, "`"+", "+"`"))
-		AddStringFlag(c, doctl.ArgFormat, "", "", formatHelp)
-		AddBoolFlag(c, doctl.ArgNoHeader, "", false, "Return raw data with no headers")
+		AddStringFlag(c, blcli.ArgFormat, "", "", formatHelp)
+		AddBoolFlag(c, blcli.ArgNoHeader, "", false, "Return raw data with no headers")
 	}
 
 	return c

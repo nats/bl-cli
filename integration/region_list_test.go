@@ -104,27 +104,27 @@ const (
 {
   "regions": [
     {
-      "name": "New York 1",
-      "slug": "nyc1",
+      "name": "Sydney",
+      "slug": "syd",
       "features": [
         "private_networking",
         "backups"
       ],
       "available": true,
       "sizes": [
-        "s-1vcpu-1gb"
+        "std-min"
       ]
     },
     {
-      "name": "San Francisco 1",
-      "slug": "sfo1",
+      "name": "Melbourne",
+      "slug": "mel",
       "features": [
         "private_networking",
         "backups"
       ],
       "available": true,
       "sizes": [
-        "s-1vcpu-1gb"
+        "std-min"
       ]
     }
   ],
@@ -135,17 +135,17 @@ const (
 }
 `
 	regionListOutput = `
-Slug    Name               Available
-nyc1    New York 1         true
-sfo1    San Francisco 1    true
+Slug    Name         Available
+syd     Sydney       true
+mel     Melbourne    true
 `
 	regionListFormatOutput = `
 Slug
-nyc1
-sfo1
+syd
+mel
 `
 	regionListNoHeaderOutput = `
-nyc1    New York 1         true
-sfo1    San Francisco 1    true
+syd    Sydney       true
+mel    Melbourne    true
 `
 )

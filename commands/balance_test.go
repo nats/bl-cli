@@ -17,13 +17,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/stretchr/testify/assert"
 )
 
-var testBalance = &do.Balance{
-	Balance: &godo.Balance{
+var testBalance = &bl.Balance{
+	Balance: &binarylane.Balance{
 		MonthToDateBalance: "23.44",
 		AccountBalance:     "12.23",
 		MonthToDateUsage:   "11.21",

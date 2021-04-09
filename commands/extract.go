@@ -5,16 +5,16 @@ import (
 	"strconv"
 )
 
-func extractDropletIDs(s []string) ([]int, error) {
-	dropletIDs := []int{}
+func extractServerIDs(s []string) ([]int, error) {
+	serverIDs := []int{}
 
 	for _, e := range s {
 		i, err := strconv.Atoi(e)
 		if err != nil {
-			return nil, fmt.Errorf("Provided value [%v] for droplet id is not of type int", e)
+			return nil, fmt.Errorf("Provided value [%v] for server id is not of type int", e)
 		}
-		dropletIDs = append(dropletIDs, i)
+		serverIDs = append(serverIDs, i)
 	}
 
-	return dropletIDs, nil
+	return serverIDs, nil
 }

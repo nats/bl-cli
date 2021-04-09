@@ -56,8 +56,8 @@ var _ = suite("invoices/summary", func(t *testing.T, when spec.G, it spec.S) {
 })
 
 const invoiceSummaryOutput string = `
-Invoice UUID            Billing Period    Amount    User Name        Company         Email                   Product Charges Amount    Overages Amount    Taxes Amount    Credits and Adjustments Amount
-example-invoice-uuid    2020-01           27.13     Frodo Baggins    DigitalOcean    fbaggins@example.com    12.34                     3.45               4.56            6.78
+Invoice UUID            Billing Period    Amount    User Name        Company       Email                   Product Charges Amount    Overages Amount    Taxes Amount    Credits and Adjustments Amount
+example-invoice-uuid    2020-01           27.13     Frodo Baggins    BinaryLane    fbaggins@example.com    12.34                     3.45               4.56            6.78
 `
 const invoiceSummaryResponse string = `
 {
@@ -65,7 +65,7 @@ const invoiceSummaryResponse string = `
 	"billing_period": "2020-01",
 	"amount": "27.13",
 	"user_name": "Frodo Baggins",
-	"user_company": "DigitalOcean",
+	"user_company": "BinaryLane",
 	"user_email": "fbaggins@example.com",
 	"product_charges": {
 		"name": "Product usage charges",

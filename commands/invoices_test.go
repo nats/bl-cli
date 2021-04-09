@@ -20,15 +20,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/go-binarylane"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
-var testInvoicesList = &do.InvoiceList{
-	InvoiceList: &godo.InvoiceList{
-		Invoices: []godo.InvoiceListItem{
+var testInvoicesList = &bl.InvoiceList{
+	InvoiceList: &binarylane.InvoiceList{
+		Invoices: []binarylane.InvoiceListItem{
 			{
 				InvoiceUUID:   "example-invoice-uuid-1",
 				Amount:        "12.34",
@@ -40,7 +40,7 @@ var testInvoicesList = &do.InvoiceList{
 				InvoicePeriod: "2019-12",
 			},
 		},
-		InvoicePreview: godo.InvoiceListItem{
+		InvoicePreview: binarylane.InvoiceListItem{
 			InvoiceUUID:   "example-invoice-uuid-preview",
 			Amount:        "34.56",
 			InvoicePeriod: "2020-02",
@@ -49,15 +49,15 @@ var testInvoicesList = &do.InvoiceList{
 	},
 }
 
-var testInvoicesGet = &do.Invoice{
-	Invoice: &godo.Invoice{
-		InvoiceItems: []godo.InvoiceItem{
+var testInvoicesGet = &bl.Invoice{
+	Invoice: &binarylane.Invoice{
+		InvoiceItems: []binarylane.InvoiceItem{
 			{
-				Product:          "Droplets",
+				Product:          "Servers",
 				ResourceID:       "1234",
-				ResourceUUID:     "droplet-1234-uuid",
+				ResourceUUID:     "server-1234-uuid",
 				GroupDescription: "",
-				Description:      "My Example Droplet",
+				Description:      "My Example Server",
 				Amount:           "12.34",
 				Duration:         "672",
 				DurationUnit:     "Hours",
@@ -84,13 +84,13 @@ var testInvoicesGet = &do.Invoice{
 	},
 }
 
-var testInvoiceSummary = &do.InvoiceSummary{
-	InvoiceSummary: &godo.InvoiceSummary{
+var testInvoiceSummary = &bl.InvoiceSummary{
+	InvoiceSummary: &binarylane.InvoiceSummary{
 		InvoiceUUID:   "example-invoice-uuid",
 		BillingPeriod: "2020-01",
 		Amount:        "27.13",
 		UserName:      "Frodo Baggins",
-		UserBillingAddress: godo.Address{
+		UserBillingAddress: binarylane.Address{
 			AddressLine1:    "101 Bagshot Row",
 			AddressLine2:    "#2",
 			City:            "Hobbiton",
@@ -100,12 +100,12 @@ var testInvoiceSummary = &do.InvoiceSummary{
 			CreatedAt:       time.Date(2018, 6, 20, 8, 44, 38, 0, time.UTC),
 			UpdatedAt:       time.Date(2018, 6, 21, 8, 44, 38, 0, time.UTC),
 		},
-		UserCompany: "DigitalOcean",
+		UserCompany: "BinaryLane",
 		UserEmail:   "fbaggins@example.com",
-		ProductCharges: godo.InvoiceSummaryBreakdown{
+		ProductCharges: binarylane.InvoiceSummaryBreakdown{
 			Name:   "Product usage charges",
 			Amount: "12.34",
-			Items: []godo.InvoiceSummaryBreakdownItem{
+			Items: []binarylane.InvoiceSummaryBreakdownItem{
 				{
 					Name:   "Spaces Subscription",
 					Amount: "10.00",
@@ -118,15 +118,15 @@ var testInvoiceSummary = &do.InvoiceSummary{
 				},
 			},
 		},
-		Overages: godo.InvoiceSummaryBreakdown{
+		Overages: binarylane.InvoiceSummaryBreakdown{
 			Name:   "Overages",
 			Amount: "3.45",
 		},
-		Taxes: godo.InvoiceSummaryBreakdown{
+		Taxes: binarylane.InvoiceSummaryBreakdown{
 			Name:   "Taxes",
 			Amount: "4.56",
 		},
-		CreditsAndAdjustments: godo.InvoiceSummaryBreakdown{
+		CreditsAndAdjustments: binarylane.InvoiceSummaryBreakdown{
 			Name:   "Credits & adjustments",
 			Amount: "6.78",
 		},

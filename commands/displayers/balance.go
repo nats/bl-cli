@@ -17,11 +17,11 @@ import (
 	"io"
 	"time"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Balance struct {
-	*do.Balance
+	*bl.Balance
 }
 
 var _ Displayable = &Balance{}

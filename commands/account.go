@@ -14,7 +14,7 @@ limitations under the License.
 package commands
 
 import (
-	"github.com/digitalocean/doctl/commands/displayers"
+	"github.com/binarylane/bl-cli/commands/displayers"
 	"github.com/spf13/cobra"
 )
 
@@ -24,16 +24,16 @@ func Account() *Command {
 		Command: &cobra.Command{
 			Use:   "account",
 			Short: "Display commands that retrieve account details",
-			Long: `The subcommands of ` + "`" + `doctl account` + "`" + ` retrieve information about DigitalOcean accounts.
+			Long: `The subcommands of ` + "`" + `bl account` + "`" + ` retrieve information about BinaryLane accounts.
 
-For example, ` + "`" + `doctl account get` + "`" + ` retrieves account profile details, and ` + "`" + `doctl account ratelimit` + "`" + ` retrieves API usage details.`,
+For example, ` + "`" + `bl account get` + "`" + ` retrieves account profile details, and ` + "`" + `bl account ratelimit` + "`" + ` retrieves API usage details.`,
 		},
 	}
 
 	CmdBuilder(cmd, RunAccountGet, "get", "Retrieve account profile details", `Retrieve the following details from your account profile:
 
 - Email address
-- Account Droplet limit
+- Account Server limit
 - Email verification status
 - Account status (active or disabled)
 - UUID for the account.`, Writer,
@@ -45,7 +45,7 @@ For example, ` + "`" + `doctl account get` + "`" + ` retrieves account profile d
 - The number of API calls you have made in the last hour
 - When the API call count is due to reset to zero, which happens hourly
 
-Note that these details are per OAuth token and are tied to the token you used when calling `+"`"+`doctl auth init`+"`"+` at setup time.`, Writer,
+Note that these details are per OAuth token and are tied to the token you used when calling `+"`"+`bl auth init`+"`"+` at setup time.`, Writer,
 		aliasOpt("rl"), displayerType(&displayers.RateLimit{}))
 
 	return cmd

@@ -20,7 +20,7 @@ import (
 	"net/rpc/jsonrpc"
 	"os"
 
-	"github.com/digitalocean/doctl"
+	"github.com/binarylane/bl-cli"
 	"github.com/natefinch/pie"
 	"github.com/spf13/viper"
 )
@@ -45,7 +45,7 @@ func NewHost(pluginPath string) (*Host, error) {
 // Call a method on the plugin.
 func (h *Host) Call(method string, args ...string) (string, error) {
 	opts := &CallOptions{
-		AccessToken: viper.GetString(doctl.ArgAccessToken),
+		AccessToken: viper.GetString(blcli.ArgAccessToken),
 		Args:        args,
 	}
 

@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Project struct {
-	Projects do.Projects
+	Projects bl.Projects
 }
 
 var _ Displayable = &Project{}
@@ -82,7 +82,7 @@ func (p *Project) KV() []map[string]interface{} {
 }
 
 type ProjectResource struct {
-	ProjectResources do.ProjectResources
+	ProjectResources bl.ProjectResources
 }
 
 var _ Displayable = &ProjectResource{}

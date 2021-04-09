@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package doctl
+package blcli
 
 const (
 	// ArgAccessToken is the access token to be used for the operations
@@ -38,56 +38,16 @@ const (
 	ArgAppSpec = "spec"
 	// ArgAppLogType the type of log.
 	ArgAppLogType = "type"
-	// ArgAppDeployment is the deployment ID.
-	ArgAppDeployment = "deployment"
-	// ArgAppLogFollow follow logs.
-	ArgAppLogFollow = "follow"
-	// ArgClusterName is a cluster name argument.
-	ArgClusterName = "cluster-name"
-	// ArgClusterVersionSlug is a cluster version argument.
-	ArgClusterVersionSlug = "version"
-	// ArgVPCUUID is a VPC UUID argument.
-	ArgVPCUUID = "vpc-uuid"
-	// ArgClusterVPCUUID is a cluster vpc-uuid argument.
-	ArgClusterVPCUUID = "vpc-uuid"
-	// ArgClusterNodePool are a cluster's node pools arguments.
-	ArgClusterNodePool = "node-pool"
-	// ArgClusterUpdateKubeconfig updates the local kubeconfig.
-	ArgClusterUpdateKubeconfig = "update-kubeconfig"
-	// ArgNodePoolName is a cluster's node pool name argument.
-	ArgNodePoolName = "name"
-	// ArgNodePoolCount is a cluster's node pool count argument.
-	ArgNodePoolCount = "count"
-	// ArgNodePoolAutoScale is a cluster's node pool auto_scale argument.
-	ArgNodePoolAutoScale = "auto-scale"
-	// ArgNodePoolMinNodes is a cluster's node pool min_nodes argument.
-	ArgNodePoolMinNodes = "min-nodes"
-	// ArgNodePoolMaxNodes is a cluster's node pool max_nodes argument.
-	ArgNodePoolMaxNodes = "max-nodes"
-	// ArgNodePoolNodeIDs is a cluster's node pool nodes argument.
-	ArgNodePoolNodeIDs = "node-ids"
-	// ArgMaintenanceWindow is a cluster's maintenance window argument
-	ArgMaintenanceWindow = "maintenance-window"
-	// ArgAutoUpgrade is a cluster's auto-upgrade argument.
-	ArgAutoUpgrade = "auto-upgrade"
-	// ArgSurgeUpgrade is a cluster's surge-upgrade argument.
-	ArgSurgeUpgrade = "surge-upgrade"
+	// ArgVPCID is a VPC ID argument.
+	ArgVPCID = "vpc-id"
 	// ArgCommandWait is a wait for a resource to be created argument.
 	ArgCommandWait = "wait"
-	// ArgSetCurrentContext is a flag to set the new kubeconfig context as current.
-	ArgSetCurrentContext = "set-current-context"
-	// ArgDropletID is a droplet id argument.
-	ArgDropletID = "droplet-id"
-	// ArgDropletIDs is a list of droplet IDs.
-	ArgDropletIDs = "droplet-ids"
-	// ArgKernelID is a ekrnel id argument.
+	// ArgServerID is a server id argument.
+	ArgServerID = "server-id"
+	// ArgServerIDs is a list of server IDs.
+	ArgServerIDs = "server-ids"
+	// ArgKernelID is a kernel id argument.
 	ArgKernelID = "kernel-id"
-	// ArgKubernetesLabel is a Kubernetes label argument.
-	ArgKubernetesLabel = "label"
-	// ArgKubernetesTaint is a Kubernetes taint argument.
-	ArgKubernetesTaint = "taint"
-	// ArgKubeConfigExpirySeconds indicates the length of time the token in a kubeconfig will be valid in seconds.
-	ArgKubeConfigExpirySeconds = "expiry-seconds"
 	// ArgImage is an image argument.
 	ArgImage = "image"
 	// ArgImageID is an image id argument.
@@ -98,8 +58,8 @@ const (
 	ArgImageSlug = "image-slug"
 	// ArgIPAddress is an IP address argument.
 	ArgIPAddress = "ip-address"
-	// ArgDropletName is a droplet name argument.
-	ArgDropletName = "droplet-name"
+	// ArgServerName is a server name argument.
+	ArgServerName = "server-name"
 	// ArgResizeDisk is a resize disk argument.
 	ArgResizeDisk = "resize-disk"
 	// ArgSnapshotName is a snapshot name argument.
@@ -194,8 +154,6 @@ const (
 	ArgTemplate = "template"
 	// ArgVersion is the version of the command to use
 	ArgVersion = "version"
-	// ArgVerbose enables verbose output
-	ArgVerbose = "verbose"
 
 	// ArgOutput is an output type argument.
 	ArgOutput = "output"
@@ -245,7 +203,7 @@ const (
 	ArgRedirectHTTPToHTTPS = "redirect-http-to-https"
 	// ArgEnableProxyProtocol is a flag that indicates whether PROXY protocol should be enabled on the load balancer.
 	ArgEnableProxyProtocol = "enable-proxy-protocol"
-	// ArgEnableBackendKeepalive is a flag that indicates whether keepalive connections should be enabled to target droplets from the load balancer.
+	// ArgEnableBackendKeepalive is a flag that indicates whether keepalive connections should be enabled to target servers from the load balancer.
 	ArgEnableBackendKeepalive = "enable-backend-keepalive"
 	// ArgStickySessions is a list of sticky sessions settings for the load balancer.
 	ArgStickySessions = "sticky-sessions"
@@ -317,12 +275,4 @@ const (
 	ArgReadWrite = "read-write"
 	// ArgRegistryExpirySeconds indicates the length of time the token will be valid in seconds.
 	ArgRegistryExpirySeconds = "expiry-seconds"
-
-	// 1-Click Args
-
-	// ArgOneClicks is the flag to pass in 1-click application slugs
-	ArgOneClicks = "1-clicks"
-
-	// ArgOneClickType is the type of 1-Click
-	ArgOneClickType = "type"
 )

@@ -78,7 +78,7 @@ var _ = suite("compute/firewall/create", func(t *testing.T, when spec.G, it spec
 
 const (
 	firewallCreateOutput = `
-ID                                      Name             Status       Created At              Inbound Rules              Outbound Rules    Droplet IDs    Tags    Pending Changes
+ID                                      Name             Status       Created At              Inbound Rules              Outbound Rules    Server IDs    Tags    Pending Changes
 e4b9c960-d385-4950-84f3-d102162e6be5    test-firewall    succeeded    2019-10-24T20:30:26Z    protocol:tcp,ports:443,`
 
 	firewallCreateRequestBody = `{
@@ -89,7 +89,7 @@ e4b9c960-d385-4950-84f3-d102162e6be5    test-firewall    succeeded    2019-10-24
 	"sources":{}
   }],
   "outbound_rules":null,
-  "droplet_ids":[],
+  "server_ids":[],
   "tags":[]
 }`
 
@@ -105,7 +105,7 @@ e4b9c960-d385-4950-84f3-d102162e6be5    test-firewall    succeeded    2019-10-24
 	}],
 	"outbound_rules":[],
 	"created_at":"2019-10-24T20:30:26Z",
-	"droplet_ids":[],
+	"server_ids":[],
 	"tags":[],
 	"pending_changes":[]
   }

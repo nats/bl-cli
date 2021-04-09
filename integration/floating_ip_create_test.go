@@ -42,7 +42,7 @@ var _ = suite("compute/floating-ip/create", func(t *testing.T, when spec.G, it s
 				expect.NoError(err)
 
 				matchedRequest := floatingIPCreateRequest
-				if !strings.Contains(string(reqBody), "droplet_id") {
+				if !strings.Contains(string(reqBody), "server_id") {
 					matchedRequest = floatingIPRegionCreateRequest
 				}
 
@@ -72,7 +72,7 @@ var _ = suite("compute/floating-ip/create", func(t *testing.T, when spec.G, it s
 					"compute",
 					"floating-ip",
 					alias,
-					"--droplet-id", "1212",
+					"--server-id", "1212",
 				)
 
 				output, err := cmd.CombinedOutput()
@@ -85,21 +85,21 @@ var _ = suite("compute/floating-ip/create", func(t *testing.T, when spec.G, it s
 
 const (
 	floatingIPCreateOutput = `
-IP             Region    Droplet ID    Droplet Name
-45.55.96.47    nyc3      1212          magic-name
+IP             Region    Server ID    Server Name
+45.55.96.47    syd       1212         magic-name
 `
 	floatingIPCreateResponse = `
 {
   "floating_ip": {
     "ip": "45.55.96.47",
-    "droplet": {
+    "server": {
       "id": 1212,
       "name": "magic-name"
     },
     "region": {
-      "name": "New York 3",
-      "slug": "nyc3",
-      "sizes": [ "s-32vcpu-192gb" ],
+      "name": "Sydney",
+      "slug": "syd",
+      "sizes": [ "std-min" ],
       "features": [ "metadata" ],
       "available": true
     },
@@ -109,9 +109,9 @@ IP             Region    Droplet ID    Droplet Name
 }
 `
 	floatingIPCreateRequest = `
-{"region":"","droplet_id":1212}
+{"region":"","server_id":1212}
 `
 	floatingIPRegionCreateRequest = `
-{"region":"newark"}
+{"region":"syd"}
 `
 )

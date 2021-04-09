@@ -16,11 +16,11 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/binarylane/bl-cli/bl"
 )
 
 type Kernel struct {
-	Kernels do.Kernels
+	Kernels bl.Kernels
 }
 
 var _ Displayable = &Kernel{}

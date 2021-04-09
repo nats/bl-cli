@@ -22,9 +22,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/doctl/pkg/ssh"
+	"github.com/binarylane/bl-cli"
+	"github.com/binarylane/bl-cli/bl"
+	"github.com/binarylane/bl-cli/pkg/ssh"
 )
 
 var (
@@ -38,85 +38,85 @@ func SSH(parent *Command) *Command {
 
 	path := filepath.Join(usr.HomeDir, ".ssh", "id_rsa")
 
-	sshDesc := fmt.Sprintf(`Access a Droplet using SSH by providing its ID or name.
+	sshDesc := fmt.Sprintf(`Access a Server using SSH by providing its ID or name.
 
-You may specify the user to login with by passing the `+"`"+`--%s`+"`"+` flag. To access the Droplet on a non-default port, use the `+"`"+`--%s`+"`"+` flag. By default, the connection will be made to the Droplet's public IP address. In order access it using its private IP address, use the `+"`"+`--%s`+"`"+` flag.
-`, doctl.ArgSSHUser, doctl.ArgsSSHPort, doctl.ArgsSSHPrivateIP)
+You may specify the user to login with by passing the `+"`"+`--%s`+"`"+` flag. To access the Server on a non-default port, use the `+"`"+`--%s`+"`"+` flag. By default, the connection will be made to the Server's public IP address. In order access it using its private IP address, use the `+"`"+`--%s`+"`"+` flag.
+`, blcli.ArgSSHUser, blcli.ArgsSSHPort, blcli.ArgsSSHPrivateIP)
 
-	cmdSSH := CmdBuilder(parent, RunSSH, "ssh <droplet-id|name>", "Access a Droplet using SSH", sshDesc, Writer)
-	AddStringFlag(cmdSSH, doctl.ArgSSHUser, "", "root", "SSH user for connection")
-	AddStringFlag(cmdSSH, doctl.ArgsSSHKeyPath, "", path, "Path to SSH private key")
-	AddIntFlag(cmdSSH, doctl.ArgsSSHPort, "", 22, "The remote port sshd is running on")
-	AddBoolFlag(cmdSSH, doctl.ArgsSSHAgentForwarding, "", false, "Enable SSH agent forwarding")
-	AddBoolFlag(cmdSSH, doctl.ArgsSSHPrivateIP, "", false, "SSH to Droplet's private IP address")
-	AddStringFlag(cmdSSH, doctl.ArgSSHCommand, "", "", "Command to execute on Droplet")
+	cmdSSH := CmdBuilder(parent, RunSSH, "ssh <server-id|name>", "Access a Server using SSH", sshDesc, Writer)
+	AddStringFlag(cmdSSH, blcli.ArgSSHUser, "", "root", "SSH user for connection")
+	AddStringFlag(cmdSSH, blcli.ArgsSSHKeyPath, "", path, "Path to SSH private key")
+	AddIntFlag(cmdSSH, blcli.ArgsSSHPort, "", 22, "The remote port sshd is running on")
+	AddBoolFlag(cmdSSH, blcli.ArgsSSHAgentForwarding, "", false, "Enable SSH agent forwarding")
+	AddBoolFlag(cmdSSH, blcli.ArgsSSHPrivateIP, "", false, "SSH to Server's private IP address")
+	AddStringFlag(cmdSSH, blcli.ArgSSHCommand, "", "", "Command to execute on Server")
 
 	return cmdSSH
 }
 
-// RunSSH finds a droplet to ssh to given input parameters (name or id).
+// RunSSH finds a server to ssh to given input parameters (name or id).
 func RunSSH(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return blcli.NewMissingArgsErr(c.NS)
 	}
 
-	dropletID := c.Args[0]
+	serverID := c.Args[0]
 
-	if dropletID == "" {
-		return doctl.NewMissingArgsErr(c.NS)
+	if serverID == "" {
+		return blcli.NewMissingArgsErr(c.NS)
 	}
 
-	user, err := c.Doit.GetString(c.NS, doctl.ArgSSHUser)
+	user, err := c.Doit.GetString(c.NS, blcli.ArgSSHUser)
 	if err != nil {
 		return err
 	}
 
-	keyPath, err := c.Doit.GetString(c.NS, doctl.ArgsSSHKeyPath)
+	keyPath, err := c.Doit.GetString(c.NS, blcli.ArgsSSHKeyPath)
 	if err != nil {
 		return err
 	}
 
-	port, err := c.Doit.GetInt(c.NS, doctl.ArgsSSHPort)
+	port, err := c.Doit.GetInt(c.NS, blcli.ArgsSSHPort)
 	if err != nil {
 		return err
 	}
 
 	var opts = make(ssh.Options)
-	opts[doctl.ArgsSSHAgentForwarding], err = c.Doit.GetBool(c.NS, doctl.ArgsSSHAgentForwarding)
+	opts[blcli.ArgsSSHAgentForwarding], err = c.Doit.GetBool(c.NS, blcli.ArgsSSHAgentForwarding)
 	if err != nil {
 		return err
 	}
 
-	opts[doctl.ArgSSHCommand], err = c.Doit.GetString(c.NS, doctl.ArgSSHCommand)
+	opts[blcli.ArgSSHCommand], err = c.Doit.GetString(c.NS, blcli.ArgSSHCommand)
 	if err != nil {
 		return nil
 	}
 
-	privateIPChoice, err := c.Doit.GetBool(c.NS, doctl.ArgsSSHPrivateIP)
+	privateIPChoice, err := c.Doit.GetBool(c.NS, blcli.ArgsSSHPrivateIP)
 	if err != nil {
 		return err
 	}
 
-	var droplet *do.Droplet
+	var server *bl.Server
 
-	ds := c.Droplets()
-	if id, err := strconv.Atoi(dropletID); err == nil {
-		// dropletID is an integer
+	ss := c.Servers()
+	if id, err := strconv.Atoi(serverID); err == nil {
+		// serverID is an integer
 
-		doDroplet, err := ds.Get(id)
+		blServer, err := ss.Get(id)
 		if err != nil {
 			return err
 		}
 
-		droplet = doDroplet
+		server = blServer
 	} else {
-		// dropletID is a string
-		droplets, err := ds.List()
+		// serverID is a string
+		servers, err := ss.List()
 		if err != nil {
 			return err
 		}
 
-		shi := extractHostInfo(dropletID)
+		shi := extractHostInfo(serverID)
 
 		if shi.user != "" {
 			user = shi.user
@@ -126,42 +126,42 @@ func RunSSH(c *CmdConfig) error {
 			port = i
 		}
 
-		for _, d := range droplets {
-			if d.Name == shi.host {
-				droplet = &d
+		for _, s := range servers {
+			if s.Name == shi.host {
+				server = &s
 				break
 			}
-			if strconv.Itoa(d.ID) == shi.host {
-				droplet = &d
+			if strconv.Itoa(s.ID) == shi.host {
+				server = &s
 				break
 			}
 		}
 
-		if droplet == nil {
-			return errors.New("Could not find Droplet")
+		if server == nil {
+			return errors.New("Could not find Server")
 		}
 
 	}
 
 	if user == "" {
-		user = defaultSSHUser(droplet)
+		user = defaultSSHUser(server)
 	}
 
-	ip, err := privateIPElsePub(droplet, privateIPChoice)
+	ip, err := privateIPElsePub(server, privateIPChoice)
 	if err != nil {
 		return err
 	}
 
 	if ip == "" {
-		return errors.New("Could not find Droplet address")
+		return errors.New("Could not find Server address")
 	}
 
 	runner := c.Doit.SSH(user, ip, keyPath, port, opts)
 	return runner.Run()
 }
 
-func defaultSSHUser(droplet *do.Droplet) string {
-	slug := strings.ToLower(droplet.Image.Slug)
+func defaultSSHUser(server *bl.Server) string {
+	slug := strings.ToLower(server.Image.Slug)
 	if strings.Contains(slug, "coreos") {
 		return "core"
 	}
@@ -189,9 +189,9 @@ func extractHostInfo(in string) sshHostInfo {
 	}
 }
 
-func privateIPElsePub(droplet *do.Droplet, choice bool) (string, error) {
+func privateIPElsePub(server *bl.Server, choice bool) (string, error) {
 	if choice {
-		return droplet.PrivateIPv4()
+		return server.PrivateIPv4()
 	}
-	return droplet.PublicIPv4()
+	return server.PublicIPv4()
 }

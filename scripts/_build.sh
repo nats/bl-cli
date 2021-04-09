@@ -6,7 +6,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../"
 OUT_D=${OUT_D:-${DIR}/builds}
 mkdir -p "$OUT_D"
 
-base="-X github.com/digitalocean/doctl."
+base="-X github.com/binarylane/bl-cli."
 build="$("$DIR"/scripts/version.sh -c)"
 ldflags="${base}Build=${build}"
 
@@ -26,5 +26,5 @@ ldflags="${ldflags} ${base}Patch=${patch}"
   export GOFLAGS=-mod=vendor
   export GO111MODULE=on
   export CGO_ENABLED=0
-  cd cmd/doctl && go build -ldflags "$ldflags" -o "${OUT_D}/doctl_${GOOS}_${GOARCH}"
+  cd cmd/bl && go build -ldflags "$ldflags" -o "${OUT_D}/bl_${GOOS}_${GOARCH}"
 )

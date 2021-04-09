@@ -14,7 +14,7 @@ limitations under the License.
 package commands
 
 import (
-	"github.com/digitalocean/doctl/commands/displayers"
+	"github.com/binarylane/bl-cli/commands/displayers"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,7 @@ func Balance() *Command {
 		Command: &cobra.Command{
 			Use:   "balance",
 			Short: "Display commands for retrieving your account balance",
-			Long:  "The subcommands of `doctl balance` retrieve information about your account balance.",
+			Long:  "The subcommands of `bl balance` retrieve information about your account balance.",
 		},
 	}
 

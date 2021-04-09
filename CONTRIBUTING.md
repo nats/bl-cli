@@ -1,10 +1,10 @@
-# Contributing to doctl
+# Contributing to bl-cli
 
 <!-- Non emacs users, feel free to update the toc by hand. -->
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Contributing to doctl](#contributing-to-doctl)
+- [Contributing to bl-cli](#contributing-to-bl-cli)
     - [Issues](#issues)
         - [Reporting an Issue](#reporting-an-issue)
         - [Issue Lifecycle](#issue-lifecycle)
@@ -15,16 +15,8 @@
             - [Writing Tests](#writing-tests)
               - [Unit tests](#unit-tests)
               - [Integration tests](#integration-tests)
-            - [`godo` mocks](#godo-mocks)
+            - [`go-binarylane` mocks](#go-binarylane-mocks)
             - [Build Scripts](#build-scripts)
-    - [Releasing](#releasing)
-        - [Tagging a release](#tagging-a-release)
-        - [Oops! Something went wrong! What now?](#oops-something-went-wrong-what-now)
-            - [Github Releases & Dockerhub](#github-releases--dockerhub)
-                - [Prerequisites](#prerequisites)
-            - [Snap](#snap)
-                - [Prerequisites](#prerequisites-1)
-        - [Updating Homebrew](#updating-homebrew)
 
 <!-- markdown-toc end -->
 
@@ -48,14 +40,14 @@ lets us merge or address your contributions quickly.
   of the *entire* generated crash log for us to look at. Double check
   no sensitive items were in the log.
 
-* Respond as promptly as possible to any questions made by the _doctl_
+* Respond as promptly as possible to any questions made by the _bl-cli_
   team to your issue. Stale issues will be closed.
 
 ### Issue Lifecycle
 
 1. The issue is reported.
 
-2. The issue is verified and categorized by a _doctl_ collaborator.
+2. The issue is verified and categorized by a _bl-cli_ collaborator.
    Categorization is done via labels. For example, bugs are marked as "bugs".
 
 3. Unless it is critical, the issue is left for a period of time (sometimes
@@ -71,17 +63,17 @@ lets us merge or address your contributions quickly.
 
 ## Pull Requests
 
-Pull requests must always be opened from a fork of `doctl`, even if you have
+Pull requests must always be opened from a fork of `bl-cli`, even if you have
 commit rights to the repository so that all contributors follow the same process.
 
 ## Developing
 
-`doctl` has `make` commands for most tooling in the `Makefile`. Run `make`
+`bl-cli` has `make` commands for most tooling in the `Makefile`. Run `make`
 or `make help` for a list of available commands with descriptions.
 
 ## Documenting
 
-`doctl` commands have two kinds of documentation: the short synopsis, that shows in the command lists, and the long description, that shows in the `--help` message for a specific command. In `commands/*.go` you'll see these two things being defined frequently, often as different arguments in `CmdBuilderWithDocs`. Here are some guidelines to keep in mind when writing these helpful texts:
+`bl-cli` commands have two kinds of documentation: the short synopsis, that shows in the command lists, and the long description, that shows in the `--help` message for a specific command. In `commands/*.go` you'll see these two things being defined frequently, often as different arguments in `CmdBuilderWithDocs`. Here are some guidelines to keep in mind when writing these helpful texts:
 
 - Go uses "quotes" for single-line strings and \``backticks`\` for multi-line strings.
 - Programmatic elements, such as command and flag names, should be surrounded by backticks.
@@ -100,7 +92,7 @@ or `make help` for a list of available commands with descriptions.
 
 ### Go environment
 
-The minimal version of Golang for `doctl` is 1.14. `doctl` uses [Go
+The minimal version of Golang for `bl-cli` is 1.14. `bl-cli` uses [Go
 modules](https://github.com/golang/go/wiki/Modules) for dependency
 management [with vendoring](https://github.com/golang/go/wiki/Modules#how-do-i-use-vendoring-with-modules-is-vendoring-going-away).
 Please run `make vendor` after any dependency modifications.
@@ -109,7 +101,7 @@ Be sure to run `go fmt` on your code before submitting a pull request.
 
 ### Docker
 
-You can build doctl in a local Docker container via `make docker_build`.
+You can build bl-cli in a local Docker container via `make docker_build`.
 
 ### Testing
 
@@ -118,7 +110,7 @@ on github.
 
 #### Writing Tests
 
-In doctl, we have two kinds of tests: unit tests and integration tests. Both are run with Go's
+In bl-cli, we have two kinds of tests: unit tests and integration tests. Both are run with Go's
 built-in `go test` tool.
 
 ##### Unit tests
@@ -132,16 +124,16 @@ given different inputs.
 Writing a unit test for a new command typically looks like this,
 
 1. Write your new command.
-2. If your new command depends on a mocked `godo` call, generate a mock for it. See
-[the section below](#godo-mocks) about regenerating mocks to learn how to do this.
+2. If your new command depends on a mocked `go-binarylane` call, generate a mock for it. See
+[the section below](#go-binarylane-mocks) about regenerating mocks to learn how to do this.
 3. Use your new mocks to stub out the API call, and write a test case. We use
 `github.com/stretchr/testify/assert` for our assertions. Test cases typically look like the following:
     ```go
     func TestMyNewCommand(t *testing.T) {
-        // Use the `withTestClient` helper to access our tets config, as well as the godo API
+        // Use the `withTestClient` helper to access our tets config, as well as the go-binarylane API
         // mocks.
         withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-            // Mock the godo API call.
+            // Mock the go-binarylane API call.
             tm.myNewCommandMock.EXPECT().Get("some-value").Return("some-other-value")
 
             // Optionally add a CLI argument.
@@ -163,7 +155,7 @@ Writing a unit test for a new command typically looks like this,
 
 Integration tests live under the top-level `integration` directory. These tests exist to ensure
 that an invocation of a command though this CLI produces the expected output. These tests use a
-mocked HTTP client, but run the actual compiled doctl binary.
+mocked HTTP client, but run the actual compiled bl binary.
 
 Writing an integration test typically looks like this,
 
@@ -175,12 +167,12 @@ Writing an integration test typically looks like this,
 Rather than providing an example here, please have a look at the [`integration/account_test.go`](/integration/account_test.go)
 file to see what an integration test typically looks like.
 
-#### `godo` mocks
+#### `go-binarylane` mocks
 
-To upgrade `godo`, run `make upgrade_godo`. This will:
+To upgrade `go-binarylane`, run `make upgrade_binarylane`. This will:
 
-* Get the latest release of `godo`, and update the go.mod and go.sum files accordingly.
-* Tidy and vendor the modules that `doctl` depends on.
+* Get the latest release of `go-binarylane`, and update the go.mod and go.sum files accordingly.
+* Tidy and vendor the modules that `bl-cli` depends on.
 * Run `mockgen` to regenerate the mocks we use in the unit test suite.
 
 #### Build Scripts
@@ -188,83 +180,3 @@ To upgrade `godo`, run `make upgrade_godo`. This will:
 If you modify the build scripts, you can use `make shellcheck` to
 check your changes. You'll need to install [shellcheck](https://github.com/koalaman/shellcheck)
 to do so. Travis also runs shellcheck.
-
-## Releasing
-
-To cut a release, push a new tag (versioning discussed below). The actual release is orchestrated
-by [Travis CI](https://docs.travis-ci.com/user/deployment/).
-
-### Tagging a release
-
-1. Run `make changes` to review the changes since the last
-   release. Based on the changes, decide what kind of release you are
-   doing (bugfix, feature or breaking).
-   `doctl` follows [semantic versioning](https://semver.org), ask if you aren't sure.
-
-1. Tag the release using `BUMP=(bugfix|feature|breaking) make tag`.
-   (Bugfix, feature and breaking are aliases for semver's patch, minor and major.
-   BUMP will also accept `patch`, `minor` and `major`, if you prefer). The command
-   assumes you have a remote repository named `origin` pointing to this
-   repository. If you'd prefer to specify a different remote repository, you can
-   do so by setting `ORIGIN=(preferred remote name)`.
-
-The new tag triggers the release.
-
-### If a release fails
-
-If part of a release fails, you can run the target for that part of the release yourself.
-
-#### Github Releases & Dockerhub
-
-`make release` releases the most recent tag to github releases and
-dockerhub images. If `make release` fails, you can always fall back to
-`goreleaser` itself.
-
-##### Prerequisites
-
-* [goreleaser](https://goreleaser.com/install/)
-* [docker](https://docs.docker.com/install/)
-* a valid `GITHUB_TOKEN` environment variable with access to the
-  `digitalocean/doctl` repo. You can generate a token
-  [here](https://github.com/settings/tokens), it needs the `public_repo`
-  access.
-* a valid [Docker Hub](dockerhub.com) login with access to the `digitalocean` account. Post
-  in #it_support to request access.
-
-#### Snap
-
-`make snap` builds and pushes a snap for the most recent tag to the
-snap store.  Specify the release channel using the environment
-variable `CHANNEL`, which defaults to `stable`:
-
-    CHANNEL=candidate make _snap
-
-If `make snap` fails, you can fall back to building and pushing the
-snap manually.
-
-##### Prerequisites
-
-* [docker](https://docs.docker.com/install/)
-* a valid [ubuntu one](https://login.ubuntu.com) login with access to the `digitalocean` snapcraft account.
-  Post in #it_support to request access.
-
-##### Building a new snap base image
-
-Occasionally, the snap build will break. When it does, it usually means that you need to update
-the custom base image we use to build the snap. The Dockerfile for that image lives in
-[dockerfiles/Dockerfile.snap](https://github.com/digitalocean/doctl/blob/master/dockerfiles/Dockerfile.snap).
-The header of the Dockerfile has hints for updating the image, as well as instructions for building
-the image using `make snap_image`. Once you've built the image, the snap_image target will provide
-instructions for next steps.
-
-### Updating Homebrew
-
-Using the url and sha from the github release, update the
-[homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/doctl.rb).
-You can use `brew bump-formula-pr doctl`, or
-
-1. fork `homebrew-core`
-1. create a branch named `doctl-<version>`
-1. update the url and the sha256 using the values for the archive in the github release
-1. commit your changes
-1. submit a PR to homebrew
